@@ -8,5 +8,6 @@ namespace UserManagementService.Authentication
     public class JWTSettings
     {
         public string SecretKey { get; set; }
+        public TimeSpan TokenLifetime { get; set; }
     }
 }

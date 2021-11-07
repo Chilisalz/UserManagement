@@ -53,7 +53,16 @@ namespace UserManagementService
             services.AddSingleton(appSettings);
 
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IChiliUserService, ChiliUserService>();
 
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+            services.AddSingleton(tokenValidationParameters);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,16 +71,8 @@ namespace UserManagementService
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
-                };
+                x.TokenValidationParameters = tokenValidationParameters;
             });
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<UserManagementContext>();
 
             services.AddSwaggerGen(c =>
             {
