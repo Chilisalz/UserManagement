@@ -1,18 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using UserManagementService.DataAccessLayer;
-using UserManagementService.Models;
+using UserManagementService.Installers;
 using UserManagementService.Options;
 using UserManagementService.Services;
 
@@ -30,67 +24,10 @@ namespace UserManagementService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContextPool<UserManagementContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
-            services.AddIdentity<ChiliUser, IdentityRole>(options =>
-            {
-                options.Password.RequiredLength = 10;
-                options.Password.RequiredUniqueChars = 3;
-            }).AddEntityFrameworkStores<UserManagementContext>();
-            services.AddControllers();
-
-            var jwtSection = Configuration.GetSection("JWTSettings");
-            services.Configure<JWTSettings>(jwtSection);
-
-            var appSettings = jwtSection.Get<JWTSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.SecretKey);
-
-            services.AddSingleton(appSettings);
-
+            services.InstallServicesInAssembly(Configuration);
+            services.AddControllers();                  
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IChiliUserService, ChiliUserService>();
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                IssuerSigningKey = new SymmetricSecurityKey(key)
-            };
-            services.AddSingleton(tokenValidationParameters);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = tokenValidationParameters;
-            });
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Benutzerverwaltung", Version = "v1" });
-
-                var security = new Dictionary<string, IEnumerable<string>>()
-                {
-                    {"Bearer", Array.Empty<string>() }
-                };
-
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Description = "JWT Authorization header using the bearer scheme",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                });
-
-                //c.AddSecurityRequirement(new ApiKeySchemesecurity);
-            });
-
-
-
+            services.AddScoped<IChiliUserService, ChiliUserService>();            
         }
 
 

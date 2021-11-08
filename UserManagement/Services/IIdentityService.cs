@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using UserManagementService.Authentication;
 using UserManagementService.Models;
 
 namespace UserManagementService.Services

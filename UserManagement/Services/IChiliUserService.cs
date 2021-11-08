@@ -8,6 +8,7 @@ namespace UserManagementService.Services
 {
     public interface IChiliUserService
     {
-        ChiliUser GetChiliUserById(Guid id);
+        Task<ChiliUser> GetChiliUserById(Guid id);
+        Task<List<ChiliUser>> GetAllUsersAsync();
     }
 }

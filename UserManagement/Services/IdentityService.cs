@@ -7,9 +7,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using UserManagementService.Authentication;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Models;
+using UserManagementService.Options;
 
 namespace UserManagementService.Services
 {
@@ -112,7 +112,7 @@ namespace UserManagementService.Services
                 };
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-            var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token == refreshToken);
+            var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
 
             if(storedRefreshToken == null)
                 return new AuthenticationResult()
@@ -168,7 +168,7 @@ namespace UserManagementService.Services
             }
         }
 
-        private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
+        private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
         {
             return (validatedToken is JwtSecurityToken jwtSecurityToken)
                      && jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
@@ -208,7 +208,7 @@ namespace UserManagementService.Services
             {
                 Success = true,
                 Token = tokenHandler.WriteToken(token),
-                RefreshToken = refreshToken.Token
+                RefreshToken = refreshToken.Token.ToString()
             };
         }
     }

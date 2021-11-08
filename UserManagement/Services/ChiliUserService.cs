@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,15 @@ namespace UserManagementService.Services
         {
             _userManager = userManager;
         }
-        public ChiliUser GetChiliUserById(Guid id)
+
+        public async Task<List<ChiliUser>> GetAllUsersAsync()
         {
-            return _userManager.Users.SingleOrDefault(x => x.Id == id.ToString());
+            return await _userManager.Users.ToListAsync();
+        }
+
+        public async Task<ChiliUser> GetChiliUserById(Guid id)
+        {
+            return await _userManager.Users.SingleOrDefaultAsync(x => x.Id == id.ToString());
         }
     }
 }

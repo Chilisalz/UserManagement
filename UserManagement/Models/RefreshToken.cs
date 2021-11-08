@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +11,7 @@ namespace UserManagementService.Models
     public class RefreshToken
     {
         [Key]
-        public string Token { get; set; }
+        public Guid Token { get; set; }
         public string JwtId { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate { get; set; }
@@ -18,6 +19,6 @@ namespace UserManagementService.Models
         public bool Invalidated { get; set; }
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public ChiliUser User { get; set; }
+        public virtual ChiliUser User { get; set; }
     }
 }
