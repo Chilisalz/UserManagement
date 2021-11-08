@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UserManagementService.Authentication
+namespace UserManagementService.Options
 {
     public class JWTSettings
     {
