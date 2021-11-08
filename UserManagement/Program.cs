@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UserManagementService.DataAccessLayer;
 
@@ -24,9 +19,9 @@ namespace UserManagementService
                 await dbContext.Database.MigrateAsync();
                 var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                if(!await roleManager.RoleExistsAsync("Admin"))
+                if(!await roleManager.RoleExistsAsync("Administrator"))
                 {
-                    var adminRole = new IdentityRole("Admin");
+                    var adminRole = new IdentityRole("Administrator");
                     await roleManager.CreateAsync(adminRole);
                 }
 

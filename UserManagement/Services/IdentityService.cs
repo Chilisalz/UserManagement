@@ -51,11 +51,12 @@ namespace UserManagementService.Services
             var newUser = new ChiliUser
             {
                 Email = email,
-                UserName = userName
+                UserName = userName,
+                RegistrationDate = DateTime.Now
             };
 
             var createdUser = await _userManager.CreateAsync(newUser, password);
-
+            
             if (!createdUser.Succeeded)
                 return new AuthenticationResult
                 {
@@ -184,8 +185,7 @@ namespace UserManagementService.Services
                     new Claim(JwtRegisteredClaimNames.Sub, newUser.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
-                    new Claim("id", newUser.Id.ToString()),
-                    new Claim("role", newUser.Role.ToString())
+                    new Claim("id", newUser.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
