@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Benutzerverwaltung.Models
+namespace UserManagementService.Models
 {
-    public class UserContext
+    public enum MemberRole
     {
-
+        Administrator,
+        StandardUser
     }
 }
