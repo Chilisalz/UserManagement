@@ -14,6 +14,7 @@ namespace UserManagementService.DataAccessLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(assembly: typeof(UserManagementContext).Assembly);
         }
     }
 }
