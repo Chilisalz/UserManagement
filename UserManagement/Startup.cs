@@ -1,13 +1,9 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using UserManagementService.Installers;
-using UserManagementService.Options;
 using UserManagementService.Services;
 
 namespace UserManagementService
@@ -25,6 +21,7 @@ namespace UserManagementService
         public void ConfigureServices(IServiceCollection services)
         {
             services.InstallServicesInAssembly(Configuration);
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();                  
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IChiliUserService, ChiliUserService>();            

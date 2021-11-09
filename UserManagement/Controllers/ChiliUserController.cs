@@ -1,35 +1,42 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using UserManagementService.Contracts.Responses;
 using UserManagementService.Services;
 
 namespace UserManagementService.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [ApiController]    
     public class ChiliUserController : ControllerBase
     {
         private readonly IChiliUserService _chiliUserService;
-        public ChiliUserController(IChiliUserService chiliUserService)
+        private readonly IMapper _mapper;
+        public ChiliUserController(IChiliUserService chiliUserService, IMapper mapper)
         {
             _chiliUserService = chiliUserService;
+            _mapper = mapper;
         }
         [HttpGet("{userId}")]
-        public IActionResult Get([FromRoute] Guid userId)
+        [Authorize(Roles = "Administrator,DefaultChiliUser")]
+        public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
-            var user = _chiliUserService.GetChiliUserById(userId);
+            var user = await _chiliUserService.GetChiliUserById(userId);
             if (user == null)
                 return NotFound();
-            return Ok(user);
+            return Ok(_mapper.Map<ChiliUserResponse>(user));
         }
 
         [HttpGet]
+        [Authorize(Roles = "DefaultChiliUser")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _chiliUserService.GetAllUsersAsync());
+            var users = await _chiliUserService.GetAllUsersAsync();
+            return Ok(_mapper.Map<List<ChiliUserResponse>>(users));
         }
     }
 }
