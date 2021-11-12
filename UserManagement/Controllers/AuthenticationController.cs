@@ -77,7 +77,7 @@ namespace UserManagementService.Controllers
                 RefreshToken = authResponse.RefreshToken
             });
         }
-
+        [HttpPost("VerifyToken")]
         public IActionResult VerifyToken([FromBody] VerifyTokenRequest request)
         {
             var verifyResponse = _identityService.VerifyToken(request.Token);

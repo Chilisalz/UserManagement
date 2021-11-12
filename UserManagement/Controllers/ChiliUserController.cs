@@ -22,7 +22,6 @@ namespace UserManagementService.Controllers
             _mapper = mapper;
         }
         [HttpGet("{userId}")]
-        [Authorize(Roles = "Administrator,DefaultChiliUser")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
             var user = await _chiliUserService.GetChiliUserById(userId);
@@ -32,7 +31,6 @@ namespace UserManagementService.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "DefaultChiliUser")]
         public async Task<IActionResult> GetAll()
         {
             var users = await _chiliUserService.GetAllUsersAsync();
