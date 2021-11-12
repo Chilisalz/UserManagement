@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace UserManagementService.Contracts.Responses
 {
-    public class VerificationFailedResponse : FailedResponseBase
+    public class FailedUpdateChiliUserResponse : FailedResponseBase
     {
-        
+
     }
 }

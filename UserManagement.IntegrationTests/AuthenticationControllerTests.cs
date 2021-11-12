@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +19,7 @@ namespace UserManagement.IntegrationTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Register", request);
             // Assert
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }

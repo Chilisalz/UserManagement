@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace UserManagementService.Contracts.Responses
 {
-    public class AuthFailedResponse
+    public class AuthFailedResponse : FailedResponseBase
     {
-        public IEnumerable<string> Errors { get; set; }
+        
     }
 }
