@@ -83,7 +83,10 @@ namespace UserManagementService.Controllers
             var verifyResponse = _identityService.VerifyToken(request.Token);
             if (verifyResponse.Verified)
             {
-                return Ok();
+                return Ok(new VerificationSuccessResponse()
+                {
+                    Token = request.Token
+                });
             }
             else
             {
