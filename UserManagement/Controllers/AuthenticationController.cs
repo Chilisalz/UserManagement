@@ -61,7 +61,7 @@ namespace UserManagementService.Controllers
             });
         }
         [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody]RefreshTokenRequest request)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
             if (!authResponse.Success)
@@ -76,6 +76,22 @@ namespace UserManagementService.Controllers
                 Token = authResponse.Token,
                 RefreshToken = authResponse.RefreshToken
             });
+        }
+
+        public IActionResult VerifyToken([FromBody] VerifyTokenRequest request)
+        {
+            var verifyResponse = _identityService.VerifyToken(request.Token);
+            if (verifyResponse.Verified)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(new VerificationFailedResponse()
+                {
+                    Errors = verifyResponse.Errors
+                });
+            }
         }
     }
 }

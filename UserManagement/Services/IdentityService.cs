@@ -56,7 +56,7 @@ namespace UserManagementService.Services
             };
 
             var createdUser = await _userManager.CreateAsync(newUser, password);
-            
+
             if (!createdUser.Succeeded)
                 return new AuthenticationResult
                 {
@@ -93,7 +93,26 @@ namespace UserManagementService.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-
+        public VerificationResult VerifyToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                _ = tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
+                return new VerificationResult()
+                {
+                    Verified = true
+                };
+            }
+            catch (Exception e)
+            {
+                return new VerificationResult()
+                {
+                    Verified = false,
+                    Errors = new[] { "Invalid Token" }
+                };
+            }
+        }
         public async Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken)
         {
             var validatedToken = GetPrincipalFromToken(token);
@@ -115,19 +134,19 @@ namespace UserManagementService.Services
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
             var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
 
-            if(storedRefreshToken == null)
+            if (storedRefreshToken == null)
                 return new AuthenticationResult()
                 {
                     Errors = new[] { "This refresh token does not exist" }
                 };
 
-            if(DateTime.UtcNow > storedRefreshToken.ExpiryDate)
+            if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
                 return new AuthenticationResult()
                 {
                     Errors = new[] { "This refresh token has expired" }
                 };
 
-            if(storedRefreshToken.Invalidated)
+            if (storedRefreshToken.Invalidated)
                 return new AuthenticationResult()
                 {
                     Errors = new[] { "This refresh token has been invalidated" }
@@ -173,7 +192,7 @@ namespace UserManagementService.Services
         {
             return (validatedToken is JwtSecurityToken jwtSecurityToken)
                      && jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-        }      
+        }
         private async Task<AuthenticationResult> GenerateAuthenticationResultForUserAsync(ChiliUser newUser)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
