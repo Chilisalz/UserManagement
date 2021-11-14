@@ -22,7 +22,7 @@ namespace UserManagementService.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new AuthFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
@@ -30,7 +30,7 @@ namespace UserManagementService.Controllers
             var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, request.UserName);
             if (!authResponse.Success)
             {
-                return BadRequest(new AuthFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = authResponse.Errors
                 });
@@ -49,7 +49,7 @@ namespace UserManagementService.Controllers
             var authResponse = await _identityService.LoginAsync(request.UserName, request.Password);
             if (!authResponse.Success)
             {
-                return BadRequest(new AuthFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = authResponse.Errors
                 });
@@ -66,7 +66,7 @@ namespace UserManagementService.Controllers
             var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
             if (!authResponse.Success)
             {
-                return BadRequest(new AuthFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = authResponse.Errors
                 });
@@ -80,7 +80,7 @@ namespace UserManagementService.Controllers
         [HttpPost("VerifyToken")]
         public async Task<IActionResult> VerifyToken([FromBody] VerifyTokenRequest request)
         {
-            var verifyResponse = await _identityService.VerifyToken(request.Token);
+            var verifyResponse = await _identityService.VerifyTokenAsync(request.Token);
             if (verifyResponse.Verified)
             {
                 return Ok(new VerificationSuccessResponse()
@@ -90,7 +90,7 @@ namespace UserManagementService.Controllers
             }
             else
             {
-                return BadRequest(new VerificationFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = verifyResponse.Errors
                 });

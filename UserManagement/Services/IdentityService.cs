@@ -93,7 +93,7 @@ namespace UserManagementService.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public async Task<VerificationResult> VerifyToken(string token)
+        public async Task<VerificationResult> VerifyTokenAsync(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             try
@@ -104,7 +104,7 @@ namespace UserManagementService.Services
                     Verified = true
                 };
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new VerificationResult()
                 {

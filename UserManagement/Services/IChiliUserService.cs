@@ -9,9 +9,9 @@ namespace UserManagementService.Services
 {
     public interface IChiliUserService
     {
-        Task<ChiliUser> GetChiliUserById(Guid id);
+        Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
         Task<List<ChiliUser>> GetAllUsersAsync();
-        Task<IdentityResult> DeleteUser(Guid id);
+        Task<IdentityResult> DeleteUserAsync(Guid id);
         Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request);
     }
 }

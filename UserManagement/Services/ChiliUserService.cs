@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
@@ -17,7 +18,7 @@ namespace UserManagementService.Services
             _userManager = userManager;
         }
 
-        public async Task<IdentityResult> DeleteUser(Guid id)
+        public async Task<IdentityResult> DeleteUserAsync(Guid id)
         {
             var delUser = await _userManager.FindByIdAsync(id.ToString());
             return await _userManager.DeleteAsync(delUser);
@@ -28,7 +29,7 @@ namespace UserManagementService.Services
             return await _userManager.Users.ToListAsync();
         }
 
-        public async Task<ChiliUser> GetChiliUserById(Guid id)
+        public async Task<ChiliUser> GetChiliUserByIdAsync(Guid id)
         {
             return await _userManager.Users.SingleOrDefaultAsync(x => x.Id == id.ToString());
         }

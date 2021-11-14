@@ -24,7 +24,7 @@ namespace UserManagementService.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
-            var user = await _chiliUserService.GetChiliUserById(userId);
+            var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
             if (user == null)
                 return NotFound();
             return Ok(_mapper.Map<ChiliUserResponse>(user));
@@ -41,7 +41,7 @@ namespace UserManagementService.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new AuthFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
@@ -57,7 +57,7 @@ namespace UserManagementService.Controllers
             }
             else
             {
-                return StatusCode((int)updateUserResult.HttpStatusCode, new FailedUpdateChiliUserResponse()
+                return StatusCode((int)updateUserResult.HttpStatusCode, new FailedResponseBase()
                 {
                     Errors = updateUserResult.Errors
                 });
@@ -66,7 +66,7 @@ namespace UserManagementService.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
-            var deleteResult = await _chiliUserService.DeleteUser(userId);
+            var deleteResult = await _chiliUserService.DeleteUserAsync(userId);
             if (deleteResult.Succeeded)
             {
                 return Ok(new DeleteSuccessResponse()
@@ -76,7 +76,7 @@ namespace UserManagementService.Controllers
             }
             else
             {
-                return BadRequest(new DeleteFailedResponse()
+                return BadRequest(new FailedResponseBase()
                 {
                     Errors = deleteResult.Errors.Select(x => x.Code + ": " + x.Description)
                 });
