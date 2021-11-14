@@ -4,11 +4,11 @@ Zuständig für alle Aufgaben rund um einen Benutzer bzw. Anwender im Chili-Imag
 ## Installation guide for local development
 1. Clone this repository
 2. Build project
-3. Start mysql-Server (XAMPP)
+3. Start PostGres-Server
 4. Run project 
 
 ## Troubleshooting
-1. Check the connectionstring (appsettings.json)
+1. Check the connectionstring (appsettings.json => PG-Server password)
 2. Check if EntityFrameworkCore.Tools is installed by typing `Get-Help about_EntityFrameworkCore`
    - if not installed run `Install-Package Microsoft.EntityFrameworkCore.Tools` and `Update-Package Microsoft.EntityFrameworkCore.Tools`
 
