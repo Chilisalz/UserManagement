@@ -9,30 +9,36 @@ using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using Xunit;
 using FluentAssertions;
+using UserManagementService.Models;
+using UserManagementService;
 
 namespace UserManagement.IntegrationTests
 {
     public class UserControllerTests : IntegrationTest
     {
+        public UserControllerTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
+        {
+
+        }
         [Fact]
         public async Task DeleteUser_WithNonExistingId_ReturnsError()
         {
             // Arrange
             var invalidGuid = Guid.Empty;
             // Act
-            var response = await TestClient.DeleteAsync($"/api/ChiliUser/Register/{invalidGuid}");
+            var response = await TestClient.DeleteAsync($"/api/ChiliUser/{invalidGuid}");
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
         }
         [Fact]
         public async Task DeleteUser_WithExistingId_ReturnsSuccess()
         {
             // Arrange
-            var invalidGuid = "bf9657c5-0827-44bb-b902-f627d24c0313";
+            var validId = "6cef0153-5b95-4e88-9746-b67f9dccef31";
             // Act
-            var response = await TestClient.DeleteAsync($"/api/ChiliUser/Register/{invalidGuid}");
+            var response = await TestClient.DeleteAsync($"/api/ChiliUser/{validId}");
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
         [Fact]
         public async Task GetUserById_WithNonExistingId_ReturnsNotFound()
@@ -54,5 +60,5 @@ namespace UserManagement.IntegrationTests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
-    }        
+    }
 }

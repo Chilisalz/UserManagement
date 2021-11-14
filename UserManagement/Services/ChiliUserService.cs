@@ -20,7 +20,8 @@ namespace UserManagementService.Services
 
         public async Task<IdentityResult> DeleteUser(Guid id)
         {
-            return await _userManager.DeleteAsync(new ChiliUser { Id = id.ToString() });
+            var delUser = await _userManager.FindByIdAsync(id.ToString());
+            return await _userManager.DeleteAsync(delUser);
         }
 
         public async Task<List<ChiliUser>> GetAllUsersAsync()
