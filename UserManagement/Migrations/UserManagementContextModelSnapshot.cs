@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserManagementService.DataAccessLayer;
 
 namespace UserManagementService.Migrations
@@ -14,25 +15,26 @@ namespace UserManagementService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.11");
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.11")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -63,17 +65,18 @@ namespace UserManagementService.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -86,17 +89,18 @@ namespace UserManagementService.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -108,17 +112,17 @@ namespace UserManagementService.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -130,10 +134,10 @@ namespace UserManagementService.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -162,16 +166,16 @@ namespace UserManagementService.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -181,57 +185,57 @@ namespace UserManagementService.Migrations
             modelBuilder.Entity("UserManagementService.Models.ChiliUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("RegistrationDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -255,9 +259,9 @@ namespace UserManagementService.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "ADMINUSER@CHILIBOARD.DE",
                             NormalizedUserName = "CHILISUPERADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPxn5h6jjL/Ha+XhFLCiZfLzkE5VyhVRfHol72kHRPeLVKOlbrAxkj6dOSEzOTJCXA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBwVLuMhWFGDuFcurTuLa43TV0D1H4eMckFl2MReYzCb6dmHUq2r5MVReQNusIJGyw==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2021, 11, 9, 20, 3, 53, 642, DateTimeKind.Local).AddTicks(8356),
+                            RegistrationDate = new DateTime(2021, 11, 14, 12, 23, 44, 278, DateTimeKind.Local).AddTicks(8200),
                             SecurityStamp = "PBBLISBKCX2SC2HZZZBU4WAECY4OOEAQ",
                             TwoFactorEnabled = false,
                             UserName = "ChiliSuperAdmin"
@@ -272,9 +276,9 @@ namespace UserManagementService.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "CASUALUSER@WEB.DE",
                             NormalizedUserName = "CASUALUSER69420",
-                            PasswordHash = "AQAAAAEAACcQAAAAECDikza4w6uCucEBshQUfHf1jr2Bx9m0vEFleN7W0XbInL3xCnklLmmZkvPeOuF0Vg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHu8QZFLJlg43NyyZZ0gpXvkhGRRzX1KgxXuJJAqTqc9r8dT5AIUuyAoq4rcNaJ3nQ==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2021, 11, 9, 20, 3, 53, 645, DateTimeKind.Local).AddTicks(3722),
+                            RegistrationDate = new DateTime(2021, 11, 14, 12, 23, 44, 284, DateTimeKind.Local).AddTicks(3410),
                             SecurityStamp = "LTH2MYEEUUL6EYVUKLWIA5RUWWJZ7USV",
                             TwoFactorEnabled = false,
                             UserName = "CasualUser69420"
@@ -289,9 +293,9 @@ namespace UserManagementService.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "CATLOVER@GMAIL.COM",
                             NormalizedUserName = "CATLOVER123",
-                            PasswordHash = "AQAAAAEAACcQAAAAENA1eoBYGBX4X4HLlowUiAZRXdhZSc5ZfhoT0LqluC8YCwLcbiAU9K6u9K1aFg8+IQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENxUCfS0CgnIcJ5orovDoxOaDuqa3/ovj7H8892I4vRhVCOt7pgCj1jTCev93q460w==",
                             PhoneNumberConfirmed = false,
-                            RegistrationDate = new DateTime(2021, 11, 9, 20, 3, 53, 645, DateTimeKind.Local).AddTicks(3773),
+                            RegistrationDate = new DateTime(2021, 11, 14, 12, 23, 44, 284, DateTimeKind.Local).AddTicks(3523),
                             SecurityStamp = "WZ2YPIJWNNJEIXICV3UT5ITRWDK2QPRZ",
                             TwoFactorEnabled = false,
                             UserName = "CatLover123"
@@ -302,25 +306,25 @@ namespace UserManagementService.Migrations
                 {
                     b.Property<Guid>("Token")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Invalidated")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("JwtId")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("Used")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("Token");
 
