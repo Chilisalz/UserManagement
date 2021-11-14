@@ -1,5 +1,4 @@
 ﻿using System;
-using UserManagementService.Models;
 
 namespace UserManagementService.Contracts.Responses
 {
