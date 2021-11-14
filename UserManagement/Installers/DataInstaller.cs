@@ -11,8 +11,8 @@ namespace UserManagementService.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            string mySqlConnectionStr = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContextPool<UserManagementContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
+            string postgresConnectionString = configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(postgresConnectionString));
             services.AddIdentity<ChiliUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 10;

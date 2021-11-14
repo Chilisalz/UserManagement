@@ -9,6 +9,7 @@ using Xunit;
 
 namespace UserManagement.IntegrationTests
 {
+    [Collection("Sequentiell")]
     public class IntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
         protected readonly HttpClient TestClient;
