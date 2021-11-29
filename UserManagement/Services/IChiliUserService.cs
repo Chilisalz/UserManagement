@@ -13,5 +13,6 @@ namespace UserManagementService.Services
         Task<List<ChiliUser>> GetAllUsersAsync();
         Task<DeleteResult> DeleteUserAsync(Guid id);
         Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request);
+        Task<ChangePasswordResult> ChangePasswordAsync(Guid id, ChangePasswordRequest request);
     }
 }

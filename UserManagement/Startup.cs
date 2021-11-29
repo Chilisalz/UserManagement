@@ -34,7 +34,7 @@ namespace UserManagementService
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Benutzerverwaltung v1"));
-
+            
 
             app.UseHttpsRedirection();
 

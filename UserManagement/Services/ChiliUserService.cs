@@ -97,5 +97,37 @@ namespace UserManagementService.Services
                 User = user
             };
         }
+
+        public async Task<ChangePasswordResult> ChangePasswordAsync(Guid id, ChangePasswordRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+                return new ChangePasswordResult()
+                {
+                    UserId = id,
+                    Success = false,
+                    Errors = new[] { "User not found" },
+                    HttpStatusCode = HttpStatusCode.NotFound
+                };
+            PasswordHasher<ChiliUser> passwordHasher = new PasswordHasher<ChiliUser>();
+            if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.OldPassword) == PasswordVerificationResult.Failed)
+                return new ChangePasswordResult()
+                {
+                    UserId = id,
+                    Success = false,
+                    Errors = new[] { "Wrong password" },
+                    HttpStatusCode = HttpStatusCode.NotFound
+                };
+
+            user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
+            await _context.SaveChangesAsync();
+
+            return new ChangePasswordResult()
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Success = true,
+                UserId = id
+            };
+        }
     }
 }

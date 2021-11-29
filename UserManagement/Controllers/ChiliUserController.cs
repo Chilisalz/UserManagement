@@ -63,6 +63,24 @@ namespace UserManagementService.Controllers
                 });
             }
         }
+        [HttpPut("ChangePassword/{userId}")]
+        public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordRequest passwordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new FailedResponseBase()
+                {
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
+                });
+            var changePasswordResult = await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
+            if (changePasswordResult.Success)
+                return Ok();
+            else
+                return StatusCode((int)changePasswordResult.HttpStatusCode, new FailedResponseBase()
+                {
+                    Errors = changePasswordResult.Errors
+                });
+        }
+
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
