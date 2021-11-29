@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace UserManagementService.Models
 {
@@ -7,6 +8,7 @@ namespace UserManagementService.Models
     {
         public Guid UserId { get; set; }
         public bool Success { get; set; }
+        public HttpStatusCode HttpStatusCode { get; set; }
         public IEnumerable<string> Errors { get; set; }
     }
 }

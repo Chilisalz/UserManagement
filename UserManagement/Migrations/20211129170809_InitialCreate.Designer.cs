@@ -10,8 +10,8 @@ using UserManagementService.DataAccessLayer;
 namespace UserManagementService.Migrations
 {
     [DbContext(typeof(UserManagementContext))]
-    [Migration("20211127210248_NoIdentity")]
-    partial class NoIdentity
+    [Migration("20211129170809_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,35 @@ namespace UserManagementService.Migrations
                     b.HasIndex("ChiliUserRoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0da09c36-50ac-44fb-a102-8b528bcbad51"),
+                            ChiliUserRoleId = new Guid("39bf46f0-cc42-438f-866c-c20c393a307b"),
+                            Email = "adminuser@chiliboard.de",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL/yQSo+xSO34YAJasxiJXYziTGtPJlU+kMBViaXvi+utEcsMRREoyPO2Q5WBxSUuQ==",
+                            RegistrationDate = new DateTime(2021, 11, 29, 18, 8, 8, 938, DateTimeKind.Local).AddTicks(8326),
+                            UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("bf9657c5-0827-44bb-b902-f627d24c0313"),
+                            ChiliUserRoleId = new Guid("372a7671-ab69-4450-b77f-306aeb4eb8f1"),
+                            Email = "casualUser@web.de",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEaX1d68pEAzCPNY6sfwtUCtVfRS/nNNQ2Ap5POX+d0DqrUvURsLjHxtRBYmyCy8ow==",
+                            RegistrationDate = new DateTime(2021, 11, 29, 18, 8, 8, 941, DateTimeKind.Local).AddTicks(9809),
+                            UserName = "CasualUser69420"
+                        },
+                        new
+                        {
+                            Id = new Guid("8c8dd0dd-a6b6-478d-a298-1011cb5bf060"),
+                            ChiliUserRoleId = new Guid("372a7671-ab69-4450-b77f-306aeb4eb8f1"),
+                            Email = "catlover@gmail.com",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL59mDOmOd6PhsQv7ewydn7n/ueWPHbJKrQzYlO/+iv8u1/DA5WwwEW1YK+yRhw7ZA==",
+                            RegistrationDate = new DateTime(2021, 11, 29, 18, 8, 8, 941, DateTimeKind.Local).AddTicks(9852),
+                            UserName = "CatLover123"
+                        });
                 });
 
             modelBuilder.Entity("UserManagementService.Models.ChiliUserRole", b =>

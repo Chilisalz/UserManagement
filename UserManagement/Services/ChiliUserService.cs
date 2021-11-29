@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,24 @@ namespace UserManagementService.Services
             _context = context;
         }
 
-        public async Task<IdentityResult> DeleteUserAsync(Guid id)
+        public async Task<DeleteResult> DeleteUserAsync(Guid id)
         {
             var delUser = await _context.Users.FindAsync(id);
+            if (delUser == null)
+                return new DeleteResult()
+                {
+                    UserId = id,
+                    Success = false,
+                    Errors = new[] { $"User not found" },
+                    HttpStatusCode = HttpStatusCode.NotFound
+                };
             _context.Users.Remove(delUser);
             await _context.SaveChangesAsync();
-            return null;
+            return new DeleteResult()
+            {
+                Success = true,
+                HttpStatusCode = HttpStatusCode.OK
+            };
         }
 
         public async Task<List<ChiliUser>> GetAllUsersAsync()
@@ -39,7 +52,7 @@ namespace UserManagementService.Services
 
         public async Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
                 return new ChiliUserUpdateResult()
                 {
@@ -65,10 +78,16 @@ namespace UserManagementService.Services
                     User = null
                 };
 
-            user.UserName = request.Username;
-            user.Email = request.Email;
+            foreach (var requestUserProperty in request.GetType().GetProperties())
+            {
+                var value = requestUserProperty.GetValue(request);
+                if (value != null)
+                {
+                    var userProperty = user.GetType().GetProperty(requestUserProperty.Name);
+                    userProperty.SetValue(user, Convert.ChangeType(value, requestUserProperty.PropertyType), null);
+                }
+            }
 
-            //await _context.Users.UpdateAsync(user);
             await _context.SaveChangesAsync();
 
             return new ChiliUserUpdateResult()

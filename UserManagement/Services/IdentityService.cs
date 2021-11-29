@@ -14,7 +14,7 @@ using UserManagementService.Options;
 namespace UserManagementService.Services
 {
     public class IdentityService : IIdentityService
-    {        
+    {
         private readonly JWTSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManagementContext _context;
@@ -26,7 +26,7 @@ namespace UserManagementService.Services
         }
         public async Task<AuthenticationResult> RegisterAsync(string email, string password, string userName)
         {
-            var existingUser = await _context.Users.FirstAsync(x => x.Email == email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             if (existingUser != null)
             {
@@ -37,7 +37,7 @@ namespace UserManagementService.Services
             }
             else
             {
-                existingUser = await _context.Users.FirstAsync(x => x.UserName == userName);
+                existingUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
                 if (existingUser != null)
                 {
                     return new AuthenticationResult()
@@ -51,9 +51,10 @@ namespace UserManagementService.Services
                 Email = email,
                 UserName = userName,
                 RegistrationDate = DateTime.Now,
-                PasswordHash = password
+                ChiliUserRoleId = Guid.Parse("372a7671-ab69-4450-b77f-306aeb4eb8f1")
             };
-
+            PasswordHasher<ChiliUser> passwordHasher = new PasswordHasher<ChiliUser>();
+            newUser.PasswordHash = passwordHasher.HashPassword(newUser, password);
             var createdUser = await _context.Users.AddAsync(newUser);
 
             if (!(createdUser.State == EntityState.Added))
@@ -66,11 +67,11 @@ namespace UserManagementService.Services
         }
         public async Task<AuthenticationResult> LoginAsync(string userName, string password)
         {
-            ChiliUser user = await _context.Users.FirstAsync(x => x.UserName == userName);
+            ChiliUser user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
 
             if (user == null)
             {
-                user = await _context.Users.FirstAsync(x => x.Email == userName);
+                user = await _context.Users.FirstOrDefaultAsync(x => x.Email == userName);
                 if (user == null)
                 {
                     return new AuthenticationResult
@@ -79,9 +80,11 @@ namespace UserManagementService.Services
                     };
                 }
             }
-            var userHasValidPassword = await _context.Users.CountAsync(x => x.PasswordHash == password) >= 1;
+            var passwordHasher = new PasswordHasher<ChiliUser>();
+            var userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
 
-            if (!userHasValidPassword)
+
+            if (userHasValidPassword == PasswordVerificationResult.Failed)
             {
                 return new AuthenticationResult
                 {
@@ -177,7 +180,7 @@ namespace UserManagementService.Services
             try
             {
                 var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out var validatedToken);
-                if (IsJwtWithValidSecurityAlgorithm(validatedToken))
+                if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
                     return null;
                 return principal;
             }

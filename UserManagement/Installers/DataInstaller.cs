@@ -13,9 +13,13 @@ namespace UserManagementService.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            //var postgresConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Process);
-            string postgresConnectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(postgresConnectionString));
+#if DEBUG
+            var connectionString = configuration.GetConnectionString("DefaultLocalConnectionString");
+#elif RELEASE
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Process);
+#endif
+
+            services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(connectionString));
         }
     }
 }

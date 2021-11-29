@@ -9,6 +9,5 @@ namespace UserManagementService.Models
         public bool Succeeded { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }
         public ChiliUser User { get; set; }
-        public ChiliUser ChiliUser { get; set; }
     }
 }

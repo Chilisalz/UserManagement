@@ -24,6 +24,7 @@ namespace UserManagementService
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
             services.AddScoped<IChiliUserService, ChiliUserService>();
+            services.AddScoped<IIdentityService, IdentityService>();
         }
 
 

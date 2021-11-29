@@ -11,7 +11,7 @@ namespace UserManagementService.Services
     {
         Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
         Task<List<ChiliUser>> GetAllUsersAsync();
-        Task<IdentityResult> DeleteUserAsync(Guid id);
+        Task<DeleteResult> DeleteUserAsync(Guid id);
         Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request);
     }
 }

@@ -67,7 +67,7 @@ namespace UserManagementService.Controllers
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
             var deleteResult = await _chiliUserService.DeleteUserAsync(userId);
-            if (deleteResult.Succeeded)
+            if (deleteResult.Success)
             {
                 return Ok(new DeleteSuccessResponse()
                 {
@@ -78,7 +78,7 @@ namespace UserManagementService.Controllers
             {
                 return BadRequest(new FailedResponseBase()
                 {
-                    Errors = deleteResult.Errors.Select(x => x.Code + ": " + x.Description)
+                    Errors = deleteResult.Errors
                 });
             }
         }
