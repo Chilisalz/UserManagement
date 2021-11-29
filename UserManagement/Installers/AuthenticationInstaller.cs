@@ -37,7 +37,6 @@ namespace UserManagementService.Installers
                 x.TokenValidationParameters = tokenValidationParameters;
             });
             services.AddAuthorization();
-
         }
     }
 }

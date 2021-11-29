@@ -53,7 +53,7 @@ namespace UserManagement.IntegrationTests
                     var deleteUser = new ChiliUser()
                     {
                         Id = Guid.Parse("6cef0153-5b95-4e88-9746-b67f9dccef31"),
-                        Email = "deleteUser@web.de",                        
+                        Email = "deleteUser@web.de",
                         RegistrationDate = DateTime.Now,
                         UserName = "DeleteUser"
                     };

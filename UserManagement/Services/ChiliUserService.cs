@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
@@ -109,7 +107,7 @@ namespace UserManagementService.Services
                     Errors = new[] { "User not found" },
                     HttpStatusCode = HttpStatusCode.NotFound
                 };
-            PasswordHasher<ChiliUser> passwordHasher = new PasswordHasher<ChiliUser>();
+            PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.OldPassword) == PasswordVerificationResult.Failed)
                 return new ChangePasswordResult()
                 {

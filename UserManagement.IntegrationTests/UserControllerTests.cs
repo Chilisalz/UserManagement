@@ -1,9 +1,9 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
 using UserManagementService;
+using Xunit;
 
 namespace UserManagement.IntegrationTests
 {

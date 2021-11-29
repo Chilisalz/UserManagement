@@ -78,9 +78,9 @@ namespace UserManagementService.Controllers
             });
         }
         [HttpPost("VerifyToken")]
-        public async Task<IActionResult> VerifyToken([FromBody] VerifyTokenRequest request)
+        public IActionResult VerifyToken([FromBody] VerifyTokenRequest request)
         {
-            var verifyResponse = await _identityService.VerifyTokenAsync(request.Token);
+            var verifyResponse = _identityService.VerifyToken(request.Token);
             if (verifyResponse.Verified)
             {
                 return Ok(new VerificationSuccessResponse()

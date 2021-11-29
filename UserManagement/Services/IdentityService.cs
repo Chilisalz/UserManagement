@@ -53,7 +53,7 @@ namespace UserManagementService.Services
                 RegistrationDate = DateTime.Now,
                 ChiliUserRoleId = Guid.Parse("372a7671-ab69-4450-b77f-306aeb4eb8f1")
             };
-            PasswordHasher<ChiliUser> passwordHasher = new PasswordHasher<ChiliUser>();
+            PasswordHasher<ChiliUser> passwordHasher = new();
             newUser.PasswordHash = passwordHasher.HashPassword(newUser, password);
             var createdUser = await _context.Users.AddAsync(newUser);
 
@@ -95,7 +95,7 @@ namespace UserManagementService.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public async Task<VerificationResult> VerifyTokenAsync(string token)
+        public VerificationResult VerifyToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             try
