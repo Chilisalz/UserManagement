@@ -44,39 +44,17 @@ namespace UserManagement.IntegrationTests
                 {
                     var UserForGet = new ChiliUser()
                     {
-                        Id = "7f6a9142-a177-466f-8c45-3c9281cfe5db",
+                        Id = Guid.Parse("7f6a9142-a177-466f-8c45-3c9281cfe5db"),
                         Email = "getuser@chiliboard.de",
-                        NormalizedEmail = "getuser@chiliboard.de".ToUpper(),
-                        EmailConfirmed = false,
-                        AccessFailedCount = 0,
-                        ConcurrencyStamp = "51f5dbf9-b09e-4ebf-9c5d-0edd1e35c919",
-                        LockoutEnabled = true,
-                        LockoutEnd = null,
-                        NormalizedUserName = "GetUser".ToUpper(),
-                        PhoneNumber = null,
-                        PhoneNumberConfirmed = false,
                         RegistrationDate = DateTime.Now,
-                        SecurityStamp = "PBBLISBKCX2SC2HZZZBU4WAECY4OOEAQ",
-                        TwoFactorEnabled = false,
                         UserName = "GetUser"
                     };
 
                     var deleteUser = new ChiliUser()
                     {
-                        Id = "6cef0153-5b95-4e88-9746-b67f9dccef31",
-                        Email = "deleteUser@web.de",
-                        NormalizedEmail = "deleteUser@web.de".ToUpper(),
-                        EmailConfirmed = false,
-                        AccessFailedCount = 0,
-                        ConcurrencyStamp = "d4a06fd5-06fb-4fb5-8669-80247ced5cdf",
-                        LockoutEnabled = true,
-                        LockoutEnd = null,
-                        NormalizedUserName = "DeleteUser".ToUpper(),
-                        PhoneNumber = null,
-                        PhoneNumberConfirmed = false,
+                        Id = Guid.Parse("6cef0153-5b95-4e88-9746-b67f9dccef31"),
+                        Email = "deleteUser@web.de",                        
                         RegistrationDate = DateTime.Now,
-                        SecurityStamp = "LTH2MYEEUUL6EYVUKLWIA5RUWWJZ7USV",
-                        TwoFactorEnabled = false,
                         UserName = "DeleteUser"
                     };
 

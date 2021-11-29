@@ -13,7 +13,7 @@ namespace UserManagementService.Models
         public DateTime ExpiryDate { get; set; }
         public bool Used { get; set; }
         public bool Invalidated { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public virtual ChiliUser User { get; set; }
     }

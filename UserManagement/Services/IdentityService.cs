@@ -14,21 +14,19 @@ using UserManagementService.Options;
 namespace UserManagementService.Services
 {
     public class IdentityService : IIdentityService
-    {
-        private readonly UserManager<ChiliUser> _userManager;
+    {        
         private readonly JWTSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManagementContext _context;
-        public IdentityService(UserManager<ChiliUser> userManager, JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context)
+        public IdentityService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context)
         {
-            _userManager = userManager;
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
         }
         public async Task<AuthenticationResult> RegisterAsync(string email, string password, string userName)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser = await _context.Users.FirstAsync(x => x.Email == email);
 
             if (existingUser != null)
             {
@@ -39,7 +37,7 @@ namespace UserManagementService.Services
             }
             else
             {
-                existingUser = await _userManager.FindByNameAsync(userName);
+                existingUser = await _context.Users.FirstAsync(x => x.UserName == userName);
                 if (existingUser != null)
                 {
                     return new AuthenticationResult()
@@ -52,26 +50,27 @@ namespace UserManagementService.Services
             {
                 Email = email,
                 UserName = userName,
-                RegistrationDate = DateTime.Now
+                RegistrationDate = DateTime.Now,
+                PasswordHash = password
             };
 
-            var createdUser = await _userManager.CreateAsync(newUser, password);
+            var createdUser = await _context.Users.AddAsync(newUser);
 
-            if (!createdUser.Succeeded)
+            if (!(createdUser.State == EntityState.Added))
                 return new AuthenticationResult
                 {
-                    Errors = createdUser.Errors.Select(x => x.Description)
+                    Errors = new[] { "Error while creating" }
                 };
 
             return await GenerateAuthenticationResultForUserAsync(newUser);
         }
         public async Task<AuthenticationResult> LoginAsync(string userName, string password)
         {
-            ChiliUser user = await _userManager.FindByNameAsync(userName);
+            ChiliUser user = await _context.Users.FirstAsync(x => x.UserName == userName);
 
             if (user == null)
             {
-                user = await _userManager.FindByEmailAsync(userName);
+                user = await _context.Users.FirstAsync(x => x.Email == userName);
                 if (user == null)
                 {
                     return new AuthenticationResult
@@ -80,7 +79,7 @@ namespace UserManagementService.Services
                     };
                 }
             }
-            var userHasValidPassword = await _userManager.CheckPasswordAsync(user, password);
+            var userHasValidPassword = await _context.Users.CountAsync(x => x.PasswordHash == password) >= 1;
 
             if (!userHasValidPassword)
             {
@@ -168,7 +167,7 @@ namespace UserManagementService.Services
             _context.RefreshTokens.Update(storedRefreshToken);
             await _context.SaveChangesAsync();
 
-            var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
+            var user = await _context.Users.FindAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }

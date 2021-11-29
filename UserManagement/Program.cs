@@ -1,6 +1,13 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using UserManagementService.DataAccessLayer;
+using UserManagementService.Installers;
 
 namespace UserManagementService
 {
@@ -8,7 +15,7 @@ namespace UserManagementService
     {
         public static async Task Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
+            var host = CreateHostBuilder(args).Build().MigrateDatabase<UserManagementContext>();
             await host.RunAsync();
         }
 
@@ -16,7 +23,10 @@ namespace UserManagementService
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel(serverOptions =>
+                    {
+                        serverOptions.Listen(IPAddress.Any, Convert.ToInt32(Environment.GetEnvironmentVariable("PORT")));
+                    }).UseStartup<Startup>();
                 });
     }
 }

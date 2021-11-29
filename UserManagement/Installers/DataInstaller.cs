@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Models;
 
@@ -11,14 +13,9 @@ namespace UserManagementService.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
+            //var postgresConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Process);
             string postgresConnectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(postgresConnectionString));
-            services.AddIdentity<ChiliUser, IdentityRole>(options =>
-            {
-                options.Password.RequiredLength = 10;
-                options.Password.RequiredUniqueChars = 3;
-            }).AddEntityFrameworkStores<UserManagementContext>()
-            .AddRoles<IdentityRole>();
         }
     }
 }
