@@ -2,11 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Models;
 using UserManagementService.Options;
@@ -24,9 +26,9 @@ namespace UserManagementService.Services
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
         }
-        public async Task<AuthenticationResult> RegisterAsync(string email, string password, string userName)
+        public async Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
 
             if (existingUser != null)
             {
@@ -37,7 +39,7 @@ namespace UserManagementService.Services
             }
             else
             {
-                existingUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+                existingUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.UserName);
                 if (existingUser != null)
                 {
                     return new AuthenticationResult()
@@ -46,15 +48,25 @@ namespace UserManagementService.Services
                     };
                 }
             }
+
+            var SecretQuestion = await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == request.SecretQuestion);
+            if (SecretQuestion == null)
+                return new AuthenticationResult()
+                {
+                    Errors = new[] { "Secretquestion not found" }
+                };
+
             var newUser = new ChiliUser
             {
-                Email = email,
-                UserName = userName,
+                Email = request.Email,
+                UserName = request.UserName,
                 RegistrationDate = DateTime.Now,
-                ChiliUserRoleId = Guid.Parse("372a7671-ab69-4450-b77f-306aeb4eb8f1")
+                ChiliUserRoleId = Guid.Parse("372a7671-ab69-4450-b77f-306aeb4eb8f1"),
+                SecretQuestionId = request.SecretQuestion
             };
             PasswordHasher<ChiliUser> passwordHasher = new();
-            newUser.PasswordHash = passwordHasher.HashPassword(newUser, password);
+            newUser.PasswordHash = passwordHasher.HashPassword(newUser, request.Password);
+            newUser.SecretAnswer = passwordHasher.HashPassword(newUser, request.SecretAnswer);
             var createdUser = await _context.Users.AddAsync(newUser);
 
             if (!(createdUser.State == EntityState.Added))
@@ -174,6 +186,35 @@ namespace UserManagementService.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
+        public async Task<List<SecurityQuestion>> GetAllSecurityQuestionsAsync()
+        {
+            return await _context.SecurityQuestions.ToListAsync();
+        }
+        public async Task<SecurityQuestion> GetSecurityQuestionOfUserAsync(Guid id)
+        {
+            return await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<VerificationResult> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
+            if (user == null)
+                return new VerificationResult()
+                {
+                    Verified = false,
+                    Errors = new[] { "User not found" }
+                };
+            PasswordHasher<ChiliUser> passwordHasher = new();
+            if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
+                return new VerificationResult()
+                {
+                    Verified = false,
+                    Errors = new[] { "Wrong answer" }
+                };
+            return new VerificationResult()
+            {
+                Verified = true
+            };
+        }
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -189,7 +230,6 @@ namespace UserManagementService.Services
                 return null;
             }
         }
-
         private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
         {
             return (validatedToken is JwtSecurityToken jwtSecurityToken)

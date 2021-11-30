@@ -4,7 +4,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.DataAccessLayer;
-using UserManagementService.Installers;
+using UserManagementService.Extensions;
 
 namespace UserManagementService
 {

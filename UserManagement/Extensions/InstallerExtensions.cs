@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using UserManagementService.Installers;
 
-namespace UserManagementService.Installers
+namespace UserManagementService.Extensions
 {
     public static class InstallerExtensions
     {

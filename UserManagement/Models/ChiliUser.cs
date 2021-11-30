@@ -15,5 +15,9 @@ namespace UserManagementService.Models
         public Guid ChiliUserRoleId { get; set; }
         [ForeignKey(nameof(ChiliUserRoleId))]
         public virtual ChiliUserRole Role { get; set; }
+        public Guid SecretQuestionId { get; set; }
+        [ForeignKey(nameof(SecretQuestionId))]
+        public virtual SecurityQuestion SecretQuestion { get; set; }
+        public string SecretAnswer { get; set; }
     }
 }

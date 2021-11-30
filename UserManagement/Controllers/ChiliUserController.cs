@@ -21,7 +21,7 @@ namespace UserManagementService.Controllers
             _chiliUserService = chiliUserService;
             _mapper = mapper;
         }
-        [HttpGet("{userId}")]
+        [HttpGet("User/{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
             var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
@@ -29,14 +29,13 @@ namespace UserManagementService.Controllers
                 return NotFound();
             return Ok(_mapper.Map<ChiliUserResponse>(user));
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var users = await _chiliUserService.GetAllUsersAsync();
             return Ok(_mapper.Map<List<ChiliUserResponse>>(users));
         }
-        [HttpPut("{userId}")]
+        [HttpPut("User/{userId}")]
         public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] ChiliUserRequest user)
         {
             if (!ModelState.IsValid)
@@ -63,7 +62,7 @@ namespace UserManagementService.Controllers
                 });
             }
         }
-        [HttpPut("ChangePassword/{userId}")]
+        [HttpPut("User/ChangePassword/{userId}")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordRequest passwordRequest)
         {
             if (!ModelState.IsValid)
@@ -80,8 +79,7 @@ namespace UserManagementService.Controllers
                     Errors = changePasswordResult.Errors
                 });
         }
-
-        [HttpDelete("{userId}")]
+        [HttpDelete("User/{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
             var deleteResult = await _chiliUserService.DeleteUserAsync(userId);

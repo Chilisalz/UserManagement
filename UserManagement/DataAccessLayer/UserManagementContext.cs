@@ -12,6 +12,7 @@ namespace UserManagementService.DataAccessLayer
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<ChiliUser> Users { get; set; }
         public DbSet<ChiliUserRole> Roles { get; set; }
+        public DbSet<SecurityQuestion> SecurityQuestions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

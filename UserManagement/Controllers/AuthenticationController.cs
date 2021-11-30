@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
@@ -27,7 +28,7 @@ namespace UserManagementService.Controllers
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
             }
-            var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, request.UserName);
+            var authResponse = await _identityService.RegisterAsync(request);
             if (!authResponse.Success)
             {
                 return BadRequest(new FailedResponseBase()
@@ -42,7 +43,6 @@ namespace UserManagementService.Controllers
             });
 
         }
-
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
@@ -95,6 +95,29 @@ namespace UserManagementService.Controllers
                     Errors = verifyResponse.Errors
                 });
             }
+        }
+        [HttpGet("Secretquestion")]
+        public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
+        {
+            var questions = await _identityService.GetAllSecurityQuestionsAsync();
+            return Ok(questions);
+        }
+        [HttpPost("ValidateSecretAnswer")]
+        public async Task<IActionResult> ValidateSecretAnswerAsync([FromBody] ValidateSecretAnswerRequest request)
+        {
+            var verificationResult = await _identityService.ValidateSecretAnswerAsync(request);
+            if (!verificationResult.Verified)
+                return BadRequest(new FailedResponseBase()
+                {
+                    Errors = verificationResult.Errors
+                });
+            return Ok();
+        }
+        [HttpGet("Secretquestion/{userId}")]
+        public async Task<IActionResult> GetSecurityQuestionOfUserAsync([FromRoute] Guid userId)
+        {
+            var question = await _identityService.GetSecurityQuestionOfUserAsync(userId);
+            return Ok(question);
         }
     }
 }

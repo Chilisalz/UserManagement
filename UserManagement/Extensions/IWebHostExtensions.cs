@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using UserManagementService.DataAccessLayer;
 
-namespace UserManagementService.Installers
+namespace UserManagementService.Extensions
 {
     public static class IWebHostExtensions
     {
