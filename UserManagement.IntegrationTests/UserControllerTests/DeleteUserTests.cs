@@ -31,9 +31,9 @@ namespace UserManagement.IntegrationTests.UserControllerTests
         public async Task DeleteUser_WithExistingId_ReturnsSuccess()
         {
             // Arrange
-            var validId = "6cef0153-5b95-4e88-9746-b67f9dccef31";
+            var validId = "8c8dd0dd-a6b6-478d-a298-1011cb5bf060";
             // Act
-            var response = await TestClient.DeleteAsync($"/api/ChiliUser/{validId}");
+            var response = await TestClient.DeleteAsync($"/api/ChiliUser/User/{validId}");
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
