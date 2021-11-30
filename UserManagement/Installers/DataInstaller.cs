@@ -13,9 +13,8 @@ namespace UserManagementService.Installers
             var connectionString = configuration.GetConnectionString("DefaultLocalConnectionString");
 #elif RELEASE
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Process);
-#endif
-
-            services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(connectionString));
+#endif                      
+            services.AddDbContext<UserManagementContext>(options => options.UseNpgsql(connectionString));            
         }
     }
 }

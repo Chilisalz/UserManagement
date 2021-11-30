@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace UserManagementService.Contracts.Requests
 {
@@ -7,5 +8,7 @@ namespace UserManagementService.Contracts.Requests
         [EmailAddress]
         public string Email { get; set; }
         public string Username { get; set; }
+        public string SecretAnswer { get; set; }
+        public Guid SecretQuestion { get; set; }
     }
 }
