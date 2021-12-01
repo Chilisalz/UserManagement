@@ -6,21 +6,22 @@ using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
+using UserManagementService.Extensions;
 using UserManagementService.Models;
 
 namespace UserManagementService.Services
 {
-    public class ChiliUserService : IChiliUserService
+    public class UserService : IUserService
     {
         private readonly UserManagementContext _context;
-        public ChiliUserService(UserManagementContext context)
+        public UserService(UserManagementContext context)
         {
             _context = context;
         }
 
         public async Task<DeleteResult> DeleteUserAsync(Guid id)
         {
-            var delUser = await _context.Users.FindAsync(id);
+            var delUser = await _context.Users.FindByIdAsync(id);
             if (delUser == null)
                 return new DeleteResult()
                 {
@@ -37,20 +38,17 @@ namespace UserManagementService.Services
                 HttpStatusCode = HttpStatusCode.OK
             };
         }
-
         public async Task<List<ChiliUser>> GetAllUsersAsync()
         {
             return await _context.Users.ToListAsync();
         }
-
         public async Task<ChiliUser> GetChiliUserByIdAsync(Guid id)
         {
-            return await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Users.FindByIdAsync(id);
         }
-
         public async Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users.FindByIdAsync(id);
             if (user == null)
                 return new ChiliUserUpdateResult()
                 {
@@ -95,10 +93,9 @@ namespace UserManagementService.Services
                 User = user
             };
         }
-
         public async Task<ChangePasswordResult> ChangePasswordAsync(Guid id, ChangePasswordRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users.FindByIdAsync(id);
             if (user == null)
                 return new ChangePasswordResult()
                 {

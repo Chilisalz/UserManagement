@@ -12,8 +12,8 @@ namespace UserManagementService.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IIdentityService _identityService;
-        public AuthenticationController(IIdentityService identityService)
+        private readonly IAuthenticationService _identityService;
+        public AuthenticationController(IAuthenticationService identityService)
         {
             _identityService = identityService;
         }

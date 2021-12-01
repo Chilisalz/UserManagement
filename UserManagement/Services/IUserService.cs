@@ -6,7 +6,7 @@ using UserManagementService.Models;
 
 namespace UserManagementService.Services
 {
-    public interface IChiliUserService
+    public interface IUserService
     {
         Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
         Task<List<ChiliUser>> GetAllUsersAsync();

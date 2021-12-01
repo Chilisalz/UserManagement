@@ -6,7 +6,7 @@ using UserManagementService.Models;
 
 namespace UserManagementService.Services
 {
-    public interface IIdentityService
+    public interface IAuthenticationService
     {
         Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request);
         Task<AuthenticationResult> LoginAsync(string userName, string password);
