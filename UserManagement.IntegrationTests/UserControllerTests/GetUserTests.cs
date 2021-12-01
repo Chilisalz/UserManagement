@@ -10,7 +10,7 @@ using Xunit;
 
 namespace UserManagement.IntegrationTests.UserControllerTests
 {
-    public class GetUserTests : IntegrationTest
+    public class GetUserTests : UserControllerTests
     {
         public GetUserTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {

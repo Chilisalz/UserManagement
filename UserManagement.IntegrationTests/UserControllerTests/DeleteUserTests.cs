@@ -10,7 +10,7 @@ using Xunit;
 
 namespace UserManagement.IntegrationTests.UserControllerTests
 {
-    public class DeleteUserTests :IntegrationTest
+    public class DeleteUserTests : UserControllerTests
     {
         public DeleteUserTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {

@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Text;
@@ -14,8 +11,7 @@ using FluentAssertions;
 namespace UserManagement.IntegrationTests.AuthenticationControllerTests
 {
     public class LoginTests : IntegrationTest
-    {
-        private readonly (string, string, string) _existingUsercredentials = ("admin", "adminuser@chiliboard.de", "admin");
+    {        
         private readonly (string, string, string) _nonExistingUsercredentials = ("notadmin", "notadminuser@chiliboard.de", "asdf");
 
         public LoginTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
