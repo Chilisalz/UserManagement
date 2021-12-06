@@ -26,7 +26,7 @@ namespace UserManagementService.Installers
                 {
                     Host = url.Host,
                     Port = url.Port,
-                    Database = url.LocalPath.Substring(1),
+                    Database = url.LocalPath[1..],
                     Username = url.UserInfo.Split(':')[0],
                     Password = url.UserInfo.Split(':')[1],
                     Pooling = true

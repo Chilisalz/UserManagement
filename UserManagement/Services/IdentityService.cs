@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Models;
+using UserManagementService.Models.ServiceResults;
 using UserManagementService.Options;
 
 namespace UserManagementService.Services

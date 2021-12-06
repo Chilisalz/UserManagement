@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Models;
+using UserManagementService.Models.ServiceResults;
 
 namespace UserManagementService.Services
 {
@@ -54,7 +55,7 @@ namespace UserManagementService.Services
             if (user == null)
                 return new ChiliUserUpdateResult()
                 {
-                    Succeeded = false,
+                    Success = false,
                     Errors = new[] { "User not found" },
                     HttpStatusCode = HttpStatusCode.NotFound,
                     User = null
@@ -62,7 +63,7 @@ namespace UserManagementService.Services
             if (await _context.Users.AnyAsync(x => x.UserName == request.Username && x.Id != id))
                 return new ChiliUserUpdateResult()
                 {
-                    Succeeded = false,
+                    Success = false,
                     Errors = new[] { "Username is already used" },
                     HttpStatusCode = HttpStatusCode.Conflict,
                     User = null
@@ -70,7 +71,7 @@ namespace UserManagementService.Services
             if (await _context.Users.AnyAsync(x => x.Email == request.Email && x.Id != id))
                 return new ChiliUserUpdateResult()
                 {
-                    Succeeded = false,
+                    Success = false,
                     Errors = new[] { "Email is already used" },
                     HttpStatusCode = HttpStatusCode.Conflict,
                     User = null
@@ -90,7 +91,7 @@ namespace UserManagementService.Services
 
             return new ChiliUserUpdateResult()
             {
-                Succeeded = true,
+                Success = true,
                 HttpStatusCode = HttpStatusCode.OK,
                 User = user
             };

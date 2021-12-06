@@ -46,13 +46,9 @@ namespace UserManagementService.Controllers
                 });
             }
             var updateUserResult = await _chiliUserService.UpdateUserAsync(userId, user);
-            if (updateUserResult.Succeeded)
+            if (updateUserResult.Success)
             {
-
-                return Ok(new UpdateChiliUserSuccessResponse()
-                {
-                    User = _mapper.Map<ChiliUserResponse>(updateUserResult.User)
-                });
+                return Ok(_mapper.Map<ChiliUserResponse>(updateUserResult.User));
             }
             else
             {

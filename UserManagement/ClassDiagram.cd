@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="UserManagementService.Program" Collapsed="true">
+    <Position X="47.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Startup" Collapsed="true">
+    <Position X="25.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAgAAACAAAAAA=</HashCode>
+      <FileName>Startup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.ChangePasswordRequest" Collapsed="true">
+    <Position X="50" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Requests\ChangePasswordRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.ChiliUserRequest" Collapsed="true">
+    <Position X="36.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAACAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Requests\ChiliUserRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.RefreshTokenRequest" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Contracts\Requests\RefreshTokenRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.UserLoginRequest" Collapsed="true">
+    <Position X="63.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAQAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Requests\UserLoginRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.UserRegistrationRequest" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAACAAAAAAAAAAAAAAAAAAAAADAQAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Requests\UserRegistrationRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.ValidateSecretAnswerRequest" Collapsed="true">
+    <Position X="27.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Requests\ValidateSecretAnswerRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Requests.VerifyTokenRequest" Collapsed="true">
+    <Position X="65.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Contracts\Requests\VerifyTokenRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.AuthSuccessResponse" Collapsed="true">
+    <Position X="38.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Contracts\Responses\AuthSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.ChiliUserResponse" Collapsed="true">
+    <Position X="52.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAACAAAAAAAAAAAAAAAQAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Responses\ChiliUserResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.DeleteSuccessResponse" Collapsed="true">
+    <Position X="41" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Responses\DeleteSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.FailedResponseBase" Collapsed="true">
+    <Position X="54.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Responses\FailedResponseBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.UpdateChiliUserSuccessResponse" Collapsed="true">
+    <Position X="56.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Contracts\Responses\UpdateChiliUserSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Contracts.Responses.VerificationSuccessResponse" Collapsed="true">
+    <Position X="59" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Contracts\Responses\VerificationSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Controllers.AuthenticationController" Collapsed="true">
+    <Position X="76.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAQAAAAAAAAAAEAAAAAAABAAABgAAQAAAAAAA=</HashCode>
+      <FileName>Controllers\AuthenticationController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Controllers.ChiliUserController" Collapsed="true">
+    <Position X="78.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgABAAAABAAAAAQEAAAAABgAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ChiliUserController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.DataAccessLayer.UserManagementContext" Collapsed="true">
+    <Position X="76.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAIAAAAAEAAAAAAAEgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataAccessLayer\UserManagementContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Extensions.InstallerExtensions" Collapsed="true">
+    <Position X="76.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Extensions\InstallerExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Extensions.IWebHostExtensions" Collapsed="true">
+    <Position X="78.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Extensions\IWebHostExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Installers.AuthenticationInstaller" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Installers\AuthenticationInstaller.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Installers.DataInstaller" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Installers\DataInstaller.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Installers.SwaggerInstaller" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="72.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Installers\SwaggerInstaller.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UserManagementService.Mapping.ModelToResponseProfile" Collapsed="true">
+    <Position X="75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mapping\ModelToResponseProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Migrations.InitialCreate" Collapsed="true">
+    <Position X="75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAI=</HashCode>
+      <FileName>Migrations\20211129170809_InitialCreate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Migrations.AddedSecretQuestion" Collapsed="true">
+    <Position X="75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAI=</HashCode>
+      <FileName>Migrations\20211130074617_AddedSecretQuestion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Migrations.UserManagementContextModelSnapshot" Collapsed="true">
+    <Position X="78.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Migrations\UserManagementContextModelSnapshot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.Configuration.ChiliUserConfiguration" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Configuration\ChiliUserConfiguration.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Models.Configuration.ChiliRoleConfiguration" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Configuration\IdentityRoleConfiguration.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Models.Configuration.SecurityQuestionConfiguration" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Configuration\SecurityQuestionConfiguration.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Models.AuthenticationResult" Collapsed="true">
+    <Position X="29.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAQAAAAAAAAAAAgAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Models\AuthenticationResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.ChangePasswordResult" Collapsed="true">
+    <Position X="68" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAgAAggAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ChangePasswordResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.ChiliUser" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IICCAAAAACAAAAAAEAAAAAIAAQAAAAABAQAAAAAAAAA=</HashCode>
+      <FileName>Models\ChiliUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.ChiliUserRole" Collapsed="true">
+    <Position X="70.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ChiliUserRole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.ChiliUserUpdateResult" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAQAAAAAAAAAAAAgAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Models\ChiliUserUpdateResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.DeleteResult" Collapsed="true">
+    <Position X="32" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAgAAggAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\DeleteResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.RefreshToken" Collapsed="true">
+    <Position X="72.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAVAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAQAAAABAEA=</HashCode>
+      <FileName>Models\RefreshToken.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.SecurityQuestion" Collapsed="true">
+    <Position X="11.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Models\SecurityQuestion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Models.VerificationResult" Collapsed="true">
+    <Position X="45.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Models\VerificationResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Options.JWTSettings" Collapsed="true">
+    <Position X="34.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Options\JWTSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserManagementService.Services.ChiliUserService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAARAAAIAAAAAAAAAABAAAACAAAAAQAAAA=</HashCode>
+      <FileName>Services\ChiliUserService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UserManagementService.Services.IdentityService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="61.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAQAIAAABAAgAAAEAAAAAoEAAAAggAIAAAAAAAA=</HashCode>
+      <FileName>Services\IdentityService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="UserManagementService.Installers.IInstaller" Collapsed="true">
+    <Position X="72.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Installers\IInstaller.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="UserManagementService.Services.IChiliUserService" Collapsed="true">
+    <Position X="75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAIAAAAAAAAAABAAAACAAAAAQAAAA=</HashCode>
+      <FileName>Services\IChiliUserService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="UserManagementService.Services.IIdentityService" Collapsed="true">
+    <Position X="76.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAQAAAAAAAAgAAAEAAAAAAAAAAAggAAAAAAAAAA=</HashCode>
+      <FileName>Services\IIdentityService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

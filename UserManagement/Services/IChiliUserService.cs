@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.Models;
+using UserManagementService.Models.ServiceResults;
 
 namespace UserManagementService.Services
 {

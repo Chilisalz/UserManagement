@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
-using System.Net.Http;
+﻿using FluentAssertions;
+using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementService;
 using UserManagementService.Contracts.Requests;
 using Xunit;
-using FluentAssertions;
 
 namespace UserManagement.IntegrationTests.AuthenticationControllerTests
 {
     public class LoginTests : IntegrationTest
-    {        
+    {
         private readonly (string, string, string) _nonExistingUsercredentials = ("notadmin", "notadminuser@chiliboard.de", "asdf");
 
         public LoginTests(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
-            
+
         }
         #region OK
         [Fact]

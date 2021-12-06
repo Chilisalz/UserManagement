@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace UserManagementService.Models
+namespace UserManagementService.Models.ServiceResults
 {
-    public class ChiliUserUpdateResult
+    public abstract class BaseServiceResult
     {
+        public bool Success { get; set; }
         public IEnumerable<string> Errors { get; set; }
-        public bool Succeeded { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }
-        public ChiliUser User { get; set; }
+
     }
 }
