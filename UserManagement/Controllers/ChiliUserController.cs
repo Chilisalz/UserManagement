@@ -14,9 +14,9 @@ namespace UserManagementService.Controllers
     [ApiController]
     public class ChiliUserController : ControllerBase
     {
-        private readonly IChiliUserService _chiliUserService;
+        private readonly IUserService _chiliUserService;
         private readonly IMapper _mapper;
-        public ChiliUserController(IChiliUserService chiliUserService, IMapper mapper)
+        public ChiliUserController(IUserService chiliUserService, IMapper mapper)
         {
             _chiliUserService = chiliUserService;
             _mapper = mapper;

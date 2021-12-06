@@ -21,8 +21,8 @@ namespace UserManagementService
             services.InstallServicesInAssembly(Configuration);
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
-            services.AddScoped<IChiliUserService, ChiliUserService>();
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
         }
 
 

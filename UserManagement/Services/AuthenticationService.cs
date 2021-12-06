@@ -10,18 +10,20 @@ using System.Text;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
+using UserManagementService.Extensions;
 using UserManagementService.Models;
 using UserManagementService.Models.ServiceResults;
 using UserManagementService.Options;
+using UserManagementService.Extensions;
 
 namespace UserManagementService.Services
 {
-    public class IdentityService : IIdentityService
+    public class AuthenticationService : IAuthenticationService
     {
         private readonly JWTSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManagementContext _context;
-        public IdentityService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context)
+        public AuthenticationService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context)
         {
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
@@ -29,7 +31,7 @@ namespace UserManagementService.Services
         }
         public async Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+            var existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
             {
@@ -40,7 +42,7 @@ namespace UserManagementService.Services
             }
             else
             {
-                existingUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.UserName);
+                existingUser = await _context.Users.FindByUsernameAsync(request.UserName);
                 if (existingUser != null)
                 {
                     return new AuthenticationResult()
@@ -80,11 +82,11 @@ namespace UserManagementService.Services
         }
         public async Task<AuthenticationResult> LoginAsync(string userName, string password)
         {
-            ChiliUser user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            ChiliUser user = await _context.Users.FindByUsernameAsync(userName);            
 
             if (user == null)
             {
-                user = await _context.Users.FirstOrDefaultAsync(x => x.Email == userName);
+                user = await _context.Users.FindByEmailAsync(userName);
                 if (user == null)
                 {
                     return new AuthenticationResult
