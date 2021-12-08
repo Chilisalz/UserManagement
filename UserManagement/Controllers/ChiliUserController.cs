@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.Contracts.Responses;
+using UserManagementService.Dtos;
+using UserManagementService.Exceptions;
 using UserManagementService.Services;
 
 namespace UserManagementService.Controllers
@@ -24,73 +26,121 @@ namespace UserManagementService.Controllers
         [HttpGet("User/{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
-            var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
-            if (user == null)
-                return NotFound();
-            return Ok(_mapper.Map<ChiliUserResponse>(user));
+            try
+            {
+                var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
+                return Ok(new BaseResponse<ChiliUserDto>()
+                {
+                    Content = _mapper.Map<ChiliUserDto>(user)
+                });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(new BaseResponse<Guid>()
+                {
+                    Content = userId,
+                    Errors = new[] { ex.Message }
+                });
+            }
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var users = await _chiliUserService.GetAllUsersAsync();
-            return Ok(_mapper.Map<List<ChiliUserResponse>>(users));
+            return Ok(new BaseResponse<List<ChiliUserDto>>()
+            {
+                Content = _mapper.Map<List<ChiliUserDto>>(users)
+            });
         }
         [HttpPut("User/{userId}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] ChiliUserRequest user)
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] ChiliUserDto request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new FailedResponseBase()
+                return BadRequest(new BaseResponse<ChiliUserDto>()
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
+                    Content = request
                 });
             }
-            var updateUserResult = await _chiliUserService.UpdateUserAsync(userId, user);
-            if (updateUserResult.Success)
+            try
             {
-                return Ok(_mapper.Map<ChiliUserResponse>(updateUserResult.User));
-            }
-            else
-            {
-                return StatusCode((int)updateUserResult.HttpStatusCode, new FailedResponseBase()
+                var updateUserResult = await _chiliUserService.UpdateUserAsync(userId, request);
+
+                return Ok(new BaseResponse<ChiliUserDto>()
                 {
-                    Errors = updateUserResult.Errors
+                    Content = updateUserResult,
                 });
+            }
+            catch (Exception ex)
+            {
+                if (ex is UserNotFoundException)
+                    return NotFound(new BaseResponse<ChiliUserDto>()
+                    {
+                        Content = request,
+                        Errors = new[] { ex.Message }
+                    });
+                else if (ex is UsernameAlreadyTakenException || ex is EmailAlreadyTakenException)
+                    return Conflict(new BaseResponse<ChiliUserDto>()
+                    {
+                        Content = request,
+                        Errors = new[] { ex.Message }
+                    });
+                else
+                    throw;
             }
         }
         [HttpPut("User/ChangePassword/{userId}")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordRequest passwordRequest)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new FailedResponseBase()
+                return BadRequest(new BaseResponse<Guid>()
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
+                    Content = userId
                 });
-            var changePasswordResult = await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
-            if (changePasswordResult.Success)
-                return Ok();
-            else
-                return StatusCode((int)changePasswordResult.HttpStatusCode, new FailedResponseBase()
+            try
+            {
+                var changePasswordResult = await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
+                return Ok(new BaseResponse<Guid>()
                 {
-                    Errors = changePasswordResult.Errors
+                    Content = userId
                 });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(new BaseResponse<Guid>()
+                {
+                    Content = userId,
+                    Errors = new[] { ex.Message }
+                });
+            }
+            catch(InvalidPasswordException ex)
+            {
+                return Conflict(new BaseResponse<Guid>()
+                {
+                    Content = userId,
+                    Errors = new[] { ex.Message }
+                });
+            }
         }
         [HttpDelete("User/{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
-            var deleteResult = await _chiliUserService.DeleteUserAsync(userId);
-            if (deleteResult.Success)
+            try
             {
-                return Ok(new DeleteSuccessResponse()
+                var success = await _chiliUserService.DeleteUserAsync(userId);
+                return Ok(new BaseResponse<Guid>()
                 {
-                    UserId = userId
+                    Content = userId
                 });
             }
-            else
+            catch (UserNotFoundException ex)
             {
-                return BadRequest(new FailedResponseBase()
+                return NotFound(new BaseResponse<Guid>()
                 {
-                    Errors = deleteResult.Errors
+                    Content = userId,
+                    Errors = new[] { ex.Message }
                 });
             }
         }

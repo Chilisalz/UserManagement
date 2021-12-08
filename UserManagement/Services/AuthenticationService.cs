@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -10,11 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
+using UserManagementService.Dtos;
+using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
 using UserManagementService.Models.ServiceResults;
 using UserManagementService.Options;
-using UserManagementService.Extensions;
 
 namespace UserManagementService.Services
 {
@@ -23,41 +25,29 @@ namespace UserManagementService.Services
         private readonly JWTSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManagementContext _context;
-        public AuthenticationService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context)
+        private readonly IMapper _mapper;
+        public AuthenticationService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context, IMapper mapper)
         {
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
+            _mapper = mapper;
         }
-        public async Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request)
+        public async Task<ChiliUserDto> RegisterAsync(UserRegistrationRequest request)
         {
             var existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
-            {
-                return new AuthenticationResult
-                {
-                    Errors = new[] { "User with this email address already exists" }
-                };
-            }
-            else
-            {
-                existingUser = await _context.Users.FindByUsernameAsync(request.UserName);
-                if (existingUser != null)
-                {
-                    return new AuthenticationResult()
-                    {
-                        Errors = new[] { "User with this Username already exists" }
-                    };
-                }
-            }
+                throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
+
+            existingUser = await _context.Users.FindByUsernameAsync(request.UserName);
+            if (existingUser != null)
+                throw new UsernameAlreadyTakenException($"Username {request.UserName} is already used");
+
 
             var SecretQuestion = await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == request.SecretQuestion);
             if (SecretQuestion == null)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "Secretquestion not found" }
-                };
+                throw new SecretQuestionNotFoundException($"Secretquestion with id {request.SecretQuestion} not found.");
 
             var newUser = new ChiliUser
             {
@@ -72,114 +62,70 @@ namespace UserManagementService.Services
             newUser.SecretAnswer = passwordHasher.HashPassword(newUser, request.SecretAnswer);
             var createdUser = await _context.Users.AddAsync(newUser);
 
-            if (!(createdUser.State == EntityState.Added))
-                return new AuthenticationResult
-                {
-                    Errors = new[] { "Error while creating" }
-                };
-
-            return await GenerateAuthenticationResultForUserAsync(newUser);
+            return _mapper.Map<ChiliUserDto>(newUser);
         }
         public async Task<AuthenticationResult> LoginAsync(string userName, string password)
         {
-            ChiliUser user = await _context.Users.FindByUsernameAsync(userName);            
+            ChiliUser user = await _context.Users.FindByUsernameAsync(userName);
 
             if (user == null)
             {
                 user = await _context.Users.FindByEmailAsync(userName);
                 if (user == null)
-                {
-                    return new AuthenticationResult
-                    {
-                        Errors = new[] { "User does not exist" }
-                    };
-                }
+                    throw new UserNotFoundException($"User with username or email {userName} not found");
             }
             var passwordHasher = new PasswordHasher<ChiliUser>();
             var userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
 
 
             if (userHasValidPassword == PasswordVerificationResult.Failed)
-            {
-                return new AuthenticationResult
-                {
-                    Errors = new[] { "User/Password combination is wrong" }
-                };
-            }
+                throw new InvalidPasswordException("User/Password combination is wrong");
 
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public VerificationResult VerifyToken(string token)
+        public bool VerifyToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
                 _ = tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
-                return new VerificationResult()
-                {
-                    Verified = true
-                };
+                return true;
             }
             catch (Exception)
             {
-                return new VerificationResult()
-                {
-                    Verified = false,
-                    Errors = new[] { "Invalid Token" }
-                };
+                throw new InvalidTokenException("Invalid token");
             }
         }
         public async Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken)
         {
             var validatedToken = GetPrincipalFromToken(token);
             if (validatedToken == null)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "Invalid Token" }
-                };
+                throw new InvalidTokenException("Invalid token");
             var expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
             var expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
             if (expiryDateUtc > DateTime.UtcNow)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This Token hasn't expired yet" }
-                };
+                throw new TokenHasntExpiredException("This token hasn't expired yet");
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
             var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
 
             if (storedRefreshToken == null)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This refresh token does not exist" }
-                };
+                throw new RefreshTokenNotFoundException("This refresh token does not exist");
 
             if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This refresh token has expired" }
-                };
+                throw new RefreshTokenHasExpiredException("This refresh token has expired");
 
             if (storedRefreshToken.Invalidated)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This refresh token has been invalidated" }
-                };
+                throw new InvalidatedRefreshTokenException("this refresh token has been invalidated.");
 
             if (storedRefreshToken.Used)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This refresh token has been used" }
-                };
+                throw new RefreshTokenAlreadyUsedException("This refresh token has already been used");
 
             if (storedRefreshToken.JwtId != jti)
-                return new AuthenticationResult()
-                {
-                    Errors = new[] { "This refresh token does not match this JWT" }
-                };
+                throw new InvalidJwtException("This refresh token does not match this JWT");
 
             storedRefreshToken.Used = true;
             _context.RefreshTokens.Update(storedRefreshToken);
@@ -197,26 +143,15 @@ namespace UserManagementService.Services
         {
             return await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<VerificationResult> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
+        public async Task<bool> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
             if (user == null)
-                return new VerificationResult()
-                {
-                    Verified = false,
-                    Errors = new[] { "User not found" }
-                };
+                throw new UserNotFoundException($"User with id {request.UserId} not found");
             PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
-                return new VerificationResult()
-                {
-                    Verified = false,
-                    Errors = new[] { "Wrong answer" }
-                };
-            return new VerificationResult()
-            {
-                Verified = true
-            };
+                throw new WrongSecretAnswerException($"Wrong secret answer");
+            return true;
         }
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
@@ -270,7 +205,6 @@ namespace UserManagementService.Services
 
             return new AuthenticationResult()
             {
-                Success = true,
                 Token = tokenHandler.WriteToken(token),
                 RefreshToken = refreshToken.Token.ToString()
             };

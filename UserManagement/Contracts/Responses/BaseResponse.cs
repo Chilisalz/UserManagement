@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace UserManagementService.Contracts.Responses
 {
-    public class Response
+    public class BaseResponse<T>
     {
-        public IEnumerable<string> Errors { get; set; }
-        public 
+        public T Content { get; set; }
+        public IEnumerable<string> Errors { get; set; }        
     }
 }

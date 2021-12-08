@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using UserManagementService.Contracts.Responses;
+using UserManagementService.Dtos;
 using UserManagementService.Models;
 
 namespace UserManagementService.Mapping
@@ -8,7 +9,7 @@ namespace UserManagementService.Mapping
     {
         public ModelToResponseProfile()
         {
-            CreateMap<ChiliUser, ChiliUserResponse>();
+            CreateMap<ChiliUser, ChiliUserDto>();
         }
     }
 }

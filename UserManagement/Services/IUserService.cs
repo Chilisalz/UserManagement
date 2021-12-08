@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
+using UserManagementService.Dtos;
 using UserManagementService.Models;
 using UserManagementService.Models.ServiceResults;
 
@@ -11,8 +12,8 @@ namespace UserManagementService.Services
     {
         Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
         Task<List<ChiliUser>> GetAllUsersAsync();
-        Task<DeleteResult> DeleteUserAsync(Guid id);
-        Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request);
-        Task<ChangePasswordResult> ChangePasswordAsync(Guid id, ChangePasswordRequest request);
+        Task<bool> DeleteUserAsync(Guid id);
+        Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request);
+        Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request);
     }
 }

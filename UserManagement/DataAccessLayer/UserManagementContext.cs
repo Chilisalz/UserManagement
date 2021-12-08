@@ -7,7 +7,7 @@ namespace UserManagementService.DataAccessLayer
     {
         public UserManagementContext(DbContextOptions<UserManagementContext> options) : base(options)
         {
-
+            
         }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<ChiliUser> Users { get; set; }

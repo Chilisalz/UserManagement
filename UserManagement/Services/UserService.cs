@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,8 @@ using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
+using UserManagementService.Dtos;
+using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
 using UserManagementService.Models.ServiceResults;
@@ -15,115 +18,71 @@ namespace UserManagementService.Services
     public class UserService : IUserService
     {
         private readonly UserManagementContext _context;
-        public UserService(UserManagementContext context)
+        private readonly IMapper _mapper;
+        public UserService(UserManagementContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<DeleteResult> DeleteUserAsync(Guid id)
+        public async Task<bool> DeleteUserAsync(Guid id)
         {
             var delUser = await _context.Users.FindByIdAsync(id);
             if (delUser == null)
-                return new DeleteResult()
-                {
-                    UserId = id,
-                    Success = false,
-                    Errors = new[] { $"User not found" },
-                    HttpStatusCode = HttpStatusCode.NotFound
-                };
+                throw new UserNotFoundException($"User with id {id} not found");
             _context.Users.Remove(delUser);
             await _context.SaveChangesAsync();
-            return new DeleteResult()
-            {
-                Success = true,
-                HttpStatusCode = HttpStatusCode.OK
-            };
+            return true;
         }
         public async Task<List<ChiliUser>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).ToListAsync();
         }
         public async Task<ChiliUser> GetChiliUserByIdAsync(Guid id)
         {
-            return await _context.Users.FindByIdAsync(id);
+            return await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id) ?? throw new UserNotFoundException($"User with id {id} not found");
         }
-        public async Task<ChiliUserUpdateResult> UpdateUserAsync(Guid id, ChiliUserRequest request)
+        public async Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request)
         {
-            var user = await _context.Users.FindByIdAsync(id);
+            var user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
-                return new ChiliUserUpdateResult()
-                {
-                    Success = false,
-                    Errors = new[] { "User not found" },
-                    HttpStatusCode = HttpStatusCode.NotFound,
-                    User = null
-                };
-            if (await _context.Users.AnyAsync(x => x.UserName == request.Username && x.Id != id))
-                return new ChiliUserUpdateResult()
-                {
-                    Success = false,
-                    Errors = new[] { "Username is already used" },
-                    HttpStatusCode = HttpStatusCode.Conflict,
-                    User = null
-                };
+                throw new UserNotFoundException();
+            if (await _context.Users.AnyAsync(x => x.UserName == request.UserName && x.Id != id))
+                throw new UsernameAlreadyTakenException($"Username {request.UserName} is already used");
             if (await _context.Users.AnyAsync(x => x.Email == request.Email && x.Id != id))
-                return new ChiliUserUpdateResult()
-                {
-                    Success = false,
-                    Errors = new[] { "Email is already used" },
-                    HttpStatusCode = HttpStatusCode.Conflict,
-                    User = null
-                };
+                throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
 
             foreach (var requestUserProperty in request.GetType().GetProperties())
             {
                 var value = requestUserProperty.GetValue(request);
+
                 if (value != null)
                 {
+                    if (value is Guid g && g == Guid.Empty)
+                        continue;
+
                     var userProperty = user.GetType().GetProperty(requestUserProperty.Name);
                     userProperty.SetValue(user, Convert.ChangeType(value, requestUserProperty.PropertyType), null);
+
                 }
             }
-
             await _context.SaveChangesAsync();
 
-            return new ChiliUserUpdateResult()
-            {
-                Success = true,
-                HttpStatusCode = HttpStatusCode.OK,
-                User = user
-            };
+            return _mapper.Map<ChiliUserDto>(user);
         }
-        public async Task<ChangePasswordResult> ChangePasswordAsync(Guid id, ChangePasswordRequest request)
+        public async Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request)
         {
             var user = await _context.Users.FindByIdAsync(id);
             if (user == null)
-                return new ChangePasswordResult()
-                {
-                    UserId = id,
-                    Success = false,
-                    Errors = new[] { "User not found" },
-                    HttpStatusCode = HttpStatusCode.NotFound
-                };
+                throw new UserNotFoundException($"User with id {id} not found");
             PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.OldPassword) == PasswordVerificationResult.Failed)
-                return new ChangePasswordResult()
-                {
-                    UserId = id,
-                    Success = false,
-                    Errors = new[] { "Wrong password" },
-                    HttpStatusCode = HttpStatusCode.NotFound
-                };
+                throw new InvalidPasswordException("Invalid password.");
 
             user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
             await _context.SaveChangesAsync();
 
-            return new ChangePasswordResult()
-            {
-                HttpStatusCode = HttpStatusCode.OK,
-                Success = true,
-                UserId = id
-            };
+            return true;
         }
     }
 }

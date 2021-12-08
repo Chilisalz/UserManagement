@@ -18,7 +18,7 @@ namespace UserManagement.IntegrationTests
         {
             TestClient = factory.CreateClient();
         }
-        protected async Task<AuthSuccessResponse> GetJwtAsync()
+        protected async Task<string> GetJwtAsync()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
                 new UserLoginRequest()
@@ -28,7 +28,8 @@ namespace UserManagement.IntegrationTests
                 }), Encoding.UTF8, "application/json");
             var response = await TestClient.PostAsync("/api/Authentication/Login", request);
 
-            return JsonConvert.DeserializeObject<AuthSuccessResponse>(await response.Content.ReadAsStringAsync());
+            //return JsonConvert.DeserializeObject<AuthSuccessResponse>(await response.Content.ReadAsStringAsync());
+            return null;
         }
     }
 }
