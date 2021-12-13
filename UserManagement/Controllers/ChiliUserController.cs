@@ -8,6 +8,7 @@ using UserManagementService.Contracts.Requests;
 using UserManagementService.Contracts.Responses;
 using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
+using UserManagementService.Models;
 using UserManagementService.Services;
 
 namespace UserManagementService.Controllers
@@ -23,7 +24,7 @@ namespace UserManagementService.Controllers
             _chiliUserService = chiliUserService;
             _mapper = mapper;
         }
-        [HttpGet("User/{userId}")]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
             try
@@ -31,15 +32,15 @@ namespace UserManagementService.Controllers
                 var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
                 return Ok(new BaseResponse<ChiliUserDto>()
                 {
-                    Content = _mapper.Map<ChiliUserDto>(user)
+                    Data = _mapper.Map<ChiliUserDto>(user)
                 });
             }
             catch (UserNotFoundException ex)
             {
                 return NotFound(new BaseResponse<Guid>()
                 {
-                    Content = userId,
-                    Errors = new[] { ex.Message }
+                    Data = userId,
+                    Error = ex.Message
                 });
             }
         }
@@ -49,18 +50,18 @@ namespace UserManagementService.Controllers
             var users = await _chiliUserService.GetAllUsersAsync();
             return Ok(new BaseResponse<List<ChiliUserDto>>()
             {
-                Content = _mapper.Map<List<ChiliUserDto>>(users)
+                Data = _mapper.Map<List<ChiliUserDto>>(users)
             });
         }
-        [HttpPut("User/{userId}")]
+        [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] ChiliUserDto request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new BaseResponse<ChiliUserDto>()
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
-                    Content = request
+                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
+                    Data = request
                 });
             }
             try
@@ -69,7 +70,7 @@ namespace UserManagementService.Controllers
 
                 return Ok(new BaseResponse<ChiliUserDto>()
                 {
-                    Content = updateUserResult,
+                    Data = updateUserResult,
                 });
             }
             catch (Exception ex)
@@ -77,54 +78,54 @@ namespace UserManagementService.Controllers
                 if (ex is UserNotFoundException)
                     return NotFound(new BaseResponse<ChiliUserDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Data = request,
+                        Error = ex.Message
                     });
                 else if (ex is UsernameAlreadyTakenException || ex is EmailAlreadyTakenException)
                     return Conflict(new BaseResponse<ChiliUserDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Data = request,
+                        Error = ex.Message
                     });
                 else
                     throw;
             }
         }
-        [HttpPut("User/ChangePassword/{userId}")]
+        [HttpPut("{userId}/ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordRequest passwordRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new BaseResponse<Guid>()
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
-                    Content = userId
+                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
+                    Data = userId
                 });
             try
             {
                 var changePasswordResult = await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
                 return Ok(new BaseResponse<Guid>()
                 {
-                    Content = userId
+                    Data = userId
                 });
             }
             catch (UserNotFoundException ex)
             {
                 return NotFound(new BaseResponse<Guid>()
                 {
-                    Content = userId,
-                    Errors = new[] { ex.Message }
+                    Data = userId,
+                    Error = ex.Message
                 });
             }
-            catch(InvalidPasswordException ex)
+            catch (InvalidPasswordException ex)
             {
                 return Conflict(new BaseResponse<Guid>()
                 {
-                    Content = userId,
-                    Errors = new[] { ex.Message }
+                    Data = userId,
+                    Error = ex.Message
                 });
             }
         }
-        [HttpDelete("User/{userId}")]
+        [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
             try
@@ -132,15 +133,74 @@ namespace UserManagementService.Controllers
                 var success = await _chiliUserService.DeleteUserAsync(userId);
                 return Ok(new BaseResponse<Guid>()
                 {
-                    Content = userId
+                    Data = userId
                 });
             }
             catch (UserNotFoundException ex)
             {
                 return NotFound(new BaseResponse<Guid>()
                 {
-                    Content = userId,
-                    Errors = new[] { ex.Message }
+                    Data = userId,
+                    Error = ex.Message
+                });
+            }
+        }
+        [HttpGet("Secretquestion")]
+        public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
+        {
+            var questions = await _chiliUserService.GetAllSecurityQuestionsAsync();
+            return Ok(new BaseResponse<List<SecurityQuestion>>()
+            {
+                Status = ResponseStatus.success,
+                Data = questions
+            });
+        }
+        [HttpPost("ValidateSecretAnswer")]
+        public async Task<IActionResult> ValidateSecretAnswerAsync([FromBody] ValidateSecretAnswerRequest request)
+        {
+            try
+            {
+                var verificationResult = await _chiliUserService.ValidateSecretAnswerAsync(request);
+                return Ok(new BaseResponse<Guid>()
+                {
+                    Data = request.UserId
+                });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(new BaseResponse<Guid>()
+                {
+                    Error = ex.Message,
+                    Data = request.UserId
+                });
+            }
+            catch (WrongSecretAnswerException ex)
+            {
+                return BadRequest(new BaseResponse<Guid>()
+                {
+                    Error = ex.Message,
+                    Data = request.UserId
+                });
+            }
+        }
+        [HttpGet("{email}/Secretquestion")]
+        public async Task<IActionResult> GetSecurityQuestionOfUserAsync([FromRoute] string email)
+        {
+            try
+            {
+                var question = await _chiliUserService.GetSecurityQuestionOfUserAsync(email);
+                return Ok(new BaseResponse<SecurityQuestion>()
+                {
+                    Status = ResponseStatus.success,
+                    Data = question
+                });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return Ok(new BaseResponse<SecurityQuestion>()
+                {
+                    Status = ResponseStatus.success,
+                    Error = ex.Message
                 });
             }
         }

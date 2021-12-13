@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace UserManagementService.Contracts.Requests
+namespace UserManagementService.Dtos
 {
-    public class UserLoginRequest
+    public class UserLoginDto
     {
         [Required(ErrorMessage = "Username cannot be empty.")]
         public string UserName { get; set; }

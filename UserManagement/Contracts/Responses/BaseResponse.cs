@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace UserManagementService.Contracts.Responses
 {
     public class BaseResponse<T>
     {
-        public T Content { get; set; }
-        public IEnumerable<string> Errors { get; set; }        
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ResponseStatus Status { get; set; }
+        public T Data { get; set; }
+        public string Error { get; set; }        
     }
 }

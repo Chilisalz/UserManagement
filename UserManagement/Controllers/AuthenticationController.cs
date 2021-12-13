@@ -6,7 +6,6 @@ using UserManagementService.Contracts.Requests;
 using UserManagementService.Contracts.Responses;
 using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
-using UserManagementService.Models.ServiceResults;
 using UserManagementService.Services;
 
 namespace UserManagementService.Controllers
@@ -22,14 +21,14 @@ namespace UserManagementService.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseResponse<UserRegistrationRequest>()
+                return BadRequest(new BaseResponse<UserRegistrationDto>()
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
-                    Content = request,
+                    Status = ResponseStatus.error,
+                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString()
                 });
             }
             try
@@ -37,79 +36,82 @@ namespace UserManagementService.Controllers
                 var authResponse = await _identityService.RegisterAsync(request);
                 return Ok(new BaseResponse<ChiliUserDto>()
                 {
-                    Content = authResponse,
+                    Status = ResponseStatus.success,
+                    Data = authResponse,
                 });
             }
             catch (Exception ex)
             {
                 if (ex is EmailAlreadyTakenException || ex is UsernameAlreadyTakenException)
-                    return Conflict(new BaseResponse<UserRegistrationRequest>()
+                    return Conflict(new BaseResponse<UserRegistrationDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Status = ResponseStatus.error,
+                        Error = ex.Message
                     });
                 else if (ex is SecretQuestionNotFoundException)
-                    return NotFound(new BaseResponse<UserRegistrationRequest>()
+                    return NotFound(new BaseResponse<UserRegistrationDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Status = ResponseStatus.error,
+                        Error = ex.Message
                     });
                 else
                     throw;
             }
         }
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+        public async Task<IActionResult> Login([FromBody] UserLoginDto request)
         {
             try
             {
                 var authResponse = await _identityService.LoginAsync(request.UserName, request.Password);
 
-                return Ok(new BaseResponse<AuthenticationResult>
+                return Ok(new BaseResponse<AuthenticationDto>
                 {
-                    Content = authResponse
+                    Status= ResponseStatus.success,
+                    Data = authResponse
                 });
             }
             catch (Exception ex)
             {
                 if (ex is UserNotFoundException)
-                    return NotFound(new BaseResponse<UserLoginRequest>()
+                    return NotFound(new BaseResponse<UserLoginDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Status = ResponseStatus.error,
+                        Error = ex.Message
                     });
                 else if (ex is InvalidPasswordException)
-                    return Conflict(new BaseResponse<UserLoginRequest>()
+                    return Conflict(new BaseResponse<UserLoginDto>()
                     {
-                        Content = request,
-                        Errors = new[] { ex.Message }
+                        Status = ResponseStatus.error,
+                        Error = ex.Message
                     });
                 else
                     throw;
             }
         }
-        [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        [HttpPost("Token/Refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] AuthenticationDto request)
         {
             try
             {
                 var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
-                return Ok(new BaseResponse<AuthenticationResult>
+                return Ok(new BaseResponse<AuthenticationDto>
                 {
-                    Content = authResponse
+                    Status = ResponseStatus.success,
+                    Data = authResponse
                 });
             }
 
             catch (Exception ex)
             {
-                return BadRequest(new BaseResponse<RefreshTokenRequest>()
+                return BadRequest(new BaseResponse<AuthenticationDto>()
                 {
-                    Errors = new[] { ex.Message },
-                    Content = request
+                    Status = ResponseStatus.error,
+                    Error = ex.Message,                    
                 });
             }
         }
-        [HttpPost("VerifyToken")]
+        [HttpPost("Token/Verify")]
         public IActionResult VerifyToken([FromBody] VerifyTokenRequest request)
         {
             try
@@ -117,57 +119,18 @@ namespace UserManagementService.Controllers
                 var verifyResponse = _identityService.VerifyToken(request.Token);
                 return Ok(new BaseResponse<string>()
                 {
-                    Content = request.Token,
+                    Status = ResponseStatus.success,
+                    Data = request.Token,
                 });
             }
             catch (InvalidTokenException ex)
             {
                 return BadRequest(new BaseResponse<string>()
                 {
-                    Errors = new[] { ex.Message },
-                    Content = request.Token
+                    Status = ResponseStatus.error,
+                    Error = ex.Message                    
                 });
             }
-        }
-        [HttpGet("Secretquestion")]
-        public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
-        {
-            var questions = await _identityService.GetAllSecurityQuestionsAsync();
-            return Ok(questions);
-        }
-        [HttpPost("ValidateSecretAnswer")]
-        public async Task<IActionResult> ValidateSecretAnswerAsync([FromBody] ValidateSecretAnswerRequest request)
-        {
-            try
-            {
-                var verificationResult = await _identityService.ValidateSecretAnswerAsync(request);
-                return Ok(new BaseResponse<Guid>()
-                {
-                    Content = request.UserId
-                });
-            }
-            catch (UserNotFoundException ex)
-            {
-                return NotFound(new BaseResponse<Guid>()
-                {
-                    Errors = new[] { ex.Message },
-                    Content = request.UserId
-                });
-            }
-            catch (WrongSecretAnswerException ex)
-            {
-                return BadRequest(new BaseResponse<Guid>()
-                {
-                    Errors = new[] { ex.Message },
-                    Content = request.UserId
-                });
-            }                       
-        }
-        [HttpGet("Secretquestion/{userId}")]
-        public async Task<IActionResult> GetSecurityQuestionOfUserAsync([FromRoute] Guid userId)
-        {
-            var question = await _identityService.GetSecurityQuestionOfUserAsync(userId);
-            return Ok(question);
         }
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
@@ -11,7 +10,6 @@ using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
-using UserManagementService.Models.ServiceResults;
 
 namespace UserManagementService.Services
 {
@@ -82,6 +80,27 @@ namespace UserManagementService.Services
             user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
             await _context.SaveChangesAsync();
 
+            return true;
+        }
+        public async Task<List<SecurityQuestion>> GetAllSecurityQuestionsAsync()
+        {
+            return await _context.SecurityQuestions.ToListAsync();
+        }
+        public async Task<SecurityQuestion> GetSecurityQuestionOfUserAsync(string email)
+        {
+            var user = await _context.Users.Include(u => u.SecretQuestion).FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                throw new UserNotFoundException($"User with email {email} not found");
+            return user.SecretQuestion;
+        }
+        public async Task<bool> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
+            if (user == null)
+                throw new UserNotFoundException($"User with id {request.UserId} not found");
+            PasswordHasher<ChiliUser> passwordHasher = new();
+            if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
+                throw new WrongSecretAnswerException($"Wrong secret answer");
             return true;
         }
     }

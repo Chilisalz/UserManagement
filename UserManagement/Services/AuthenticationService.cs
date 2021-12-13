@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -15,7 +14,6 @@ using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
-using UserManagementService.Models.ServiceResults;
 using UserManagementService.Options;
 
 namespace UserManagementService.Services
@@ -33,7 +31,7 @@ namespace UserManagementService.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ChiliUserDto> RegisterAsync(UserRegistrationRequest request)
+        public async Task<ChiliUserDto> RegisterAsync(UserRegistrationDto request)
         {
             var existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
@@ -61,10 +59,11 @@ namespace UserManagementService.Services
             newUser.PasswordHash = passwordHasher.HashPassword(newUser, request.Password);
             newUser.SecretAnswer = passwordHasher.HashPassword(newUser, request.SecretAnswer);
             var createdUser = await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
 
             return _mapper.Map<ChiliUserDto>(newUser);
         }
-        public async Task<AuthenticationResult> LoginAsync(string userName, string password)
+        public async Task<AuthenticationDto> LoginAsync(string userName, string password)
         {
             ChiliUser user = await _context.Users.FindByUsernameAsync(userName);
 
@@ -97,7 +96,7 @@ namespace UserManagementService.Services
                 throw new InvalidTokenException("Invalid token");
             }
         }
-        public async Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken)
+        public async Task<AuthenticationDto> RefreshTokenAsync(string token, string refreshToken)
         {
             var validatedToken = GetPrincipalFromToken(token);
             if (validatedToken == null)
@@ -134,25 +133,7 @@ namespace UserManagementService.Services
             var user = await _context.Users.FindAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
 
             return await GenerateAuthenticationResultForUserAsync(user);
-        }
-        public async Task<List<SecurityQuestion>> GetAllSecurityQuestionsAsync()
-        {
-            return await _context.SecurityQuestions.ToListAsync();
-        }
-        public async Task<SecurityQuestion> GetSecurityQuestionOfUserAsync(Guid id)
-        {
-            return await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == id);
-        }
-        public async Task<bool> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
-            if (user == null)
-                throw new UserNotFoundException($"User with id {request.UserId} not found");
-            PasswordHasher<ChiliUser> passwordHasher = new();
-            if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
-                throw new WrongSecretAnswerException($"Wrong secret answer");
-            return true;
-        }
+        }        
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -173,7 +154,7 @@ namespace UserManagementService.Services
             return (validatedToken is JwtSecurityToken jwtSecurityToken)
                      && jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
         }
-        private async Task<AuthenticationResult> GenerateAuthenticationResultForUserAsync(ChiliUser newUser)
+        private async Task<AuthenticationDto> GenerateAuthenticationResultForUserAsync(ChiliUser newUser)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
@@ -203,7 +184,7 @@ namespace UserManagementService.Services
             await _context.RefreshTokens.AddAsync(refreshToken);
             await _context.SaveChangesAsync();
 
-            return new AuthenticationResult()
+            return new AuthenticationDto()
             {
                 Token = tokenHandler.WriteToken(token),
                 RefreshToken = refreshToken.Token.ToString()

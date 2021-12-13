@@ -1,6 +1,6 @@
-﻿namespace UserManagementService.Models.ServiceResults
+﻿namespace UserManagementService.Dtos
 {
-    public class AuthenticationResult
+    public class AuthenticationDto
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
