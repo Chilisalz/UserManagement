@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using UserManagementService.Contracts.Responses;
 using UserManagementService.Extensions;
+using UserManagementService.Middleware;
 using UserManagementService.Services;
+using UserManagementService.Services.Contracts;
 
 namespace UserManagementService
 {
@@ -33,11 +37,15 @@ namespace UserManagementService
                 return new BadRequestObjectResult(new ChiliResponse<object>()
                 {
                     Status = ResponseStatus.error,
-                    Errors = actionContext.ModelState.Values.SelectMany(x => x.Errors
-            .Select(x => x.ErrorMessage))
+                    Errors = actionContext.ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))
                 });
             });
 
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +60,9 @@ namespace UserManagementService
 
             app.UseRouting();
 
+            // global error handler
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+
             app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
@@ -62,8 +73,6 @@ namespace UserManagementService
             {
                 endpoints.MapControllers();
             });
-
-
         }
     }
 }

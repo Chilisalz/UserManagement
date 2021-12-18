@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Dtos;
+using UserManagementService.Dtos.ChiliUser;
 using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
-using UserManagementService.Services.ServiceResult;
+using UserManagementService.Services.Contracts;
 
 namespace UserManagementService.Services
 {
@@ -25,30 +26,32 @@ namespace UserManagementService.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> DeleteUserAsync(Guid id)
+        public async Task DeleteUserAsync(Guid id)
         {
-            var delUser = await _context.Users.FindByIdAsync(id);
-            if (delUser == null)
+            ChiliUser delUser = await _context.Users.FindByIdAsync(id);
+            if (delUser is null)
                 throw new UserNotFoundException($"User with id {id} not found");
-            _context.Users.Remove(delUser);
-            await _context.SaveChangesAsync();
-            return true;
+
+            _ = _context.Users.Remove(delUser);
+            _ = await _context.SaveChangesAsync();
         }
         public async Task<GetUsersResultDto> GetAllUsersAsync(int page)
         {
-            var users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
-            var itemsTotal = _context.Users.Count();
-            return new GetUsersResultDto() { Users = _mapper.Map<List<ChiliUserAdminViewDto>>(users), Pagination = new Pagination(page, users.Count, itemsTotal) };
+            List<ChiliUser> users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
+            return new GetUsersResultDto()
+            {
+                Users = _mapper.Map<List<ChiliUserAdminViewDto>>(users),
+                Pagination = new Pagination(page, users.Count, _context.Users.Count())
+            };
         }
         public async Task<ChiliUserDto> GetChiliUserByIdAsync(Guid id)
         {
-            var user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id) ?? throw new UserNotFoundException($"User with id {id} not found");
-
-            return _mapper.Map<ChiliUserDto>(user);            
+            ChiliUser user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
+            return user == null ? throw new UserNotFoundException($"User with id {id} not found") : _mapper.Map<ChiliUserDto>(user);
         }
         public async Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request)
         {
-            var user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
+            ChiliUser user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
                 throw new UserNotFoundException();
             if (await _context.Users.AnyAsync(x => x.UserName == request.UserName && x.Id != id))
@@ -56,7 +59,7 @@ namespace UserManagementService.Services
             if (await _context.Users.AnyAsync(x => x.Email == request.Email && x.Id != id))
                 throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
 
-            foreach (var requestUserProperty in request.GetType().GetProperties())
+            foreach (PropertyInfo requestUserProperty in request.GetType().GetProperties())
             {
                 var value = requestUserProperty.GetValue(request);
 
@@ -65,18 +68,17 @@ namespace UserManagementService.Services
                     if (value is Guid g && g == Guid.Empty)
                         continue;
 
-                    var userProperty = user.GetType().GetProperty(requestUserProperty.Name);
-                    userProperty.SetValue(user, Convert.ChangeType(value, requestUserProperty.PropertyType), null);
-
+                    user.GetType()
+                        .GetProperty(requestUserProperty.Name)
+                        .SetValue(user, Convert.ChangeType(value, requestUserProperty.PropertyType), null); ;
                 }
             }
             await _context.SaveChangesAsync();
-
             return _mapper.Map<ChiliUserDto>(user);
         }
-        public async Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request)
+        public async Task ChangePasswordAsync(Guid id, ChangePasswordDto request)
         {
-            var user = await _context.Users.FindByIdAsync(id);
+            ChiliUser user = await _context.Users.FindByIdAsync(id);
             if (user == null)
                 throw new UserNotFoundException($"User with id {id} not found");
             PasswordHasher<ChiliUser> passwordHasher = new();
@@ -85,8 +87,6 @@ namespace UserManagementService.Services
 
             user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
             await _context.SaveChangesAsync();
-
-            return true;
         }
         public async Task<List<SecurityQuestion>> GetAllSecurityQuestionsAsync()
         {
@@ -94,20 +94,19 @@ namespace UserManagementService.Services
         }
         public async Task<SecurityQuestion> GetSecurityQuestionOfUserAsync(string email)
         {
-            var user = await _context.Users.Include(u => u.SecretQuestion).FirstOrDefaultAsync(u => u.Email == email);
+            ChiliUser user = await _context.Users.Include(u => u.SecretQuestion).FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
                 throw new UserNotFoundException($"User with email {email} not found");
             return user.SecretQuestion;
         }
-        public async Task<bool> ValidateSecretAnswerAsync(ValidateSecretAnswerRequest request)
+        public async Task ValidateSecretAnswerAsync(ValidateSecretAnswerDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
+            ChiliUser user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
             if (user == null)
                 throw new UserNotFoundException($"User with id {request.UserId} not found");
             PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
                 throw new WrongSecretAnswerException($"Wrong secret answer");
-            return true;
         }
     }
 }

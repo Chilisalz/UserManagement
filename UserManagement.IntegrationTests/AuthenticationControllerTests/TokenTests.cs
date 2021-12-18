@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementService;
-using UserManagementService.Contracts.Requests;
+using UserManagementService.Dtos;
 using Xunit;
 
 namespace UserManagement.IntegrationTests.AuthenticationControllerTests
@@ -25,7 +25,7 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
         public async Task RefreshToken_ExpiredAccessAndInvalidRefresh_BadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new RefreshTokenRequest()
+                new AuthenticationDto()
                 {
                     Token = _expiredAccessToken,
                     RefreshToken = Guid.NewGuid().ToString()
@@ -33,7 +33,7 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
 
             var response = await TestClient.PostAsync("/api/Authentication/RefreshToken", request);
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         #endregion
     }

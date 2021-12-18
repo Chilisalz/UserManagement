@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementService;
-using UserManagementService.Contracts.Requests;
+using UserManagementService.Dtos;
 using Xunit;
 
 namespace UserManagement.IntegrationTests
@@ -33,7 +33,7 @@ namespace UserManagement.IntegrationTests
         {
             // Arrange            
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _validEmail,
                     UserName = _validUsername,
@@ -52,7 +52,7 @@ namespace UserManagement.IntegrationTests
         public async Task Register_WithAlreadyUsedEmail_ReturnsError()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _alreadyUsedEmail,
                     UserName = _validUsername,
@@ -63,13 +63,13 @@ namespace UserManagement.IntegrationTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Register", request);
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
         [Fact]
         public async Task Register_WithAlreadyUsedUsername_ReturnsError()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _validEmail,
                     UserName = _alreadyUsedUsername,
@@ -80,13 +80,13 @@ namespace UserManagement.IntegrationTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Register", request);
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
         [Fact]
         public async Task Register_EmailInvalid_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _invalidEmail,
                     UserName = _validUsername,
@@ -103,7 +103,7 @@ namespace UserManagement.IntegrationTests
         public async Task Register_PasswordInvalid_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _validEmail,
                     UserName = _validUsername,
@@ -120,7 +120,7 @@ namespace UserManagement.IntegrationTests
         public async Task Register_EmptyUserName_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _validEmail,
                     UserName = string.Empty,
@@ -137,7 +137,7 @@ namespace UserManagement.IntegrationTests
         public async Task Register_InvalidSecretQuestion_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserRegistrationRequest()
+                new UserRegistrationDto()
                 {
                     Email = _validEmail,
                     UserName = _validUsername,
@@ -148,7 +148,7 @@ namespace UserManagement.IntegrationTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Register", request);
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         #endregion        
     }

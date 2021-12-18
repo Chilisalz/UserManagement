@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using UserManagementService.Dtos;
+using UserManagementService.Dtos.ChiliUser;
 using UserManagementService.Models;
-using UserManagementService.Services.ServiceResult;
 
 namespace UserManagementService.Mapping
 {
@@ -11,7 +10,6 @@ namespace UserManagementService.Mapping
         {
             CreateMap<ChiliUser, ChiliUserDto>();
             CreateMap<ChiliUser, ChiliUserAdminViewDto>();
-            CreateMap<GetUsersResult, GetUsersResultDto>();
         }
     }
 }

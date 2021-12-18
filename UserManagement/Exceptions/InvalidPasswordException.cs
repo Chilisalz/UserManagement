@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
     public class InvalidPasswordException : WebApiException
     {
-        public InvalidPasswordException():base(HttpStatusCode.Conflict)
+        public InvalidPasswordException() : base(HttpStatusCode.Conflict)
         {
 
         }

@@ -3,8 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementService;
-using UserManagementService.Contracts.Requests;
-using UserManagementService.Contracts.Responses;
+using UserManagementService.Dtos;
 using Xunit;
 
 namespace UserManagement.IntegrationTests
@@ -21,7 +20,7 @@ namespace UserManagement.IntegrationTests
         protected async Task<string> GetJwtAsync()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = _existingUsercredentials.Item2,
                     Password = _existingUsercredentials.Item3

@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementService;
-using UserManagementService.Contracts.Requests;
+using UserManagementService.Dtos;
 using Xunit;
 
 namespace UserManagement.IntegrationTests.AuthenticationControllerTests
@@ -23,7 +23,7 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
         public async Task Login_WithUsernameValid_ReturnsOK()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = _existingUsercredentials.Item1,
                     Password = _existingUsercredentials.Item3
@@ -37,7 +37,7 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
         public async Task Login_WithEmailValid_ReturnsOK()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = _existingUsercredentials.Item2,
                     Password = _existingUsercredentials.Item3
@@ -53,7 +53,7 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
         public async Task Login_WithInvalidUsername_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = _nonExistingUsercredentials.Item1,
                     Password = _existingUsercredentials.Item3
@@ -61,13 +61,13 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Login", request);
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         [Fact]
         public async Task Login_WithInvalidPassword_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = _existingUsercredentials.Item1,
                     Password = _nonExistingUsercredentials.Item3
@@ -75,13 +75,13 @@ namespace UserManagement.IntegrationTests.AuthenticationControllerTests
             // Act
             var response = await TestClient.PostAsync("/api/Authentication/Login", request);
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
         [Fact]
         public async Task Login_WithEmptyCredentials_ReturnsBadRequest()
         {
             var request = new StringContent(JsonConvert.SerializeObject(
-                new UserLoginRequest()
+                new UserLoginDto()
                 {
                     UserName = string.Empty,
                     Password = string.Empty

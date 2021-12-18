@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace UserManagementService.Contracts.Requests
+namespace UserManagementService.Dtos
 {
-    public class ValidateSecretAnswerRequest
+    public class ValidateSecretAnswerDto
     {
         [Required(ErrorMessage = "UserId cannot be empty.")]
         public Guid UserId { get; set; }

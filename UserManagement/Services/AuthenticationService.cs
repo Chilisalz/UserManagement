@@ -8,13 +8,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
 using UserManagementService.Dtos;
+using UserManagementService.Dtos.ChiliUser;
 using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
 using UserManagementService.Options;
+using UserManagementService.Services.Contracts;
 
 namespace UserManagementService.Services
 {
@@ -33,7 +34,7 @@ namespace UserManagementService.Services
         }
         public async Task<ChiliUserDto> RegisterAsync(UserRegistrationDto request)
         {
-            var existingUser = await _context.Users.FindByEmailAsync(request.Email);
+            ChiliUser existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
                 throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
@@ -42,12 +43,11 @@ namespace UserManagementService.Services
             if (existingUser != null)
                 throw new UsernameAlreadyTakenException($"Username {request.UserName} is already used");
 
-
-            var SecretQuestion = await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == request.SecretQuestion);
+            SecurityQuestion SecretQuestion = await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == request.SecretQuestion);
             if (SecretQuestion == null)
                 throw new SecretQuestionNotFoundException($"Secretquestion with id {request.SecretQuestion} not found.");
 
-            var newUser = new ChiliUser
+            ChiliUser newUser = new()
             {
                 Email = request.Email,
                 UserName = request.UserName,
@@ -58,7 +58,7 @@ namespace UserManagementService.Services
             PasswordHasher<ChiliUser> passwordHasher = new();
             newUser.PasswordHash = passwordHasher.HashPassword(newUser, request.Password);
             newUser.SecretAnswer = passwordHasher.HashPassword(newUser, request.SecretAnswer);
-            var createdUser = await _context.Users.AddAsync(newUser);
+            await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
             return _mapper.Map<ChiliUserDto>(newUser);
@@ -73,23 +73,20 @@ namespace UserManagementService.Services
                 if (user == null)
                     throw new UserNotFoundException($"User with username or email {request.UserName} not found");
             }
-            var passwordHasher = new PasswordHasher<ChiliUser>();
-            var userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
-
+            PasswordHasher<ChiliUser> passwordHasher = new();
+            PasswordVerificationResult userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
             if (userHasValidPassword == PasswordVerificationResult.Failed)
                 throw new InvalidPasswordException("User/Password combination is wrong");
 
-
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public bool VerifyToken(string token)
+        public void VerifyToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
-                _ = tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
-                return true;
+                tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
             }
             catch (Exception)
             {
@@ -98,18 +95,18 @@ namespace UserManagementService.Services
         }
         public async Task<AuthenticationDto> RefreshTokenAsync(string token, string refreshToken)
         {
-            var validatedToken = GetPrincipalFromToken(token);
+            ClaimsPrincipal validatedToken = GetPrincipalFromToken(token);
             if (validatedToken == null)
                 throw new InvalidTokenException("Invalid token");
-            var expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            var expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            long expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            DateTime expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
             if (expiryDateUtc > DateTime.UtcNow)
                 throw new TokenHasntExpiredException("This token hasn't expired yet");
 
-            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-            var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
+            string jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+            RefreshToken storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
 
             if (storedRefreshToken == null)
                 throw new RefreshTokenNotFoundException("This refresh token does not exist");
@@ -133,7 +130,7 @@ namespace UserManagementService.Services
             var user = await _context.Users.FindAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
 
             return await GenerateAuthenticationResultForUserAsync(user);
-        }        
+        }
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

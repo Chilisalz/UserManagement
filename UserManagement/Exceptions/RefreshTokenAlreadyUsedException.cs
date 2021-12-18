@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
     public class RefreshTokenAlreadyUsedException : WebApiException
     {
-        public RefreshTokenAlreadyUsedException():base(HttpStatusCode.Conflict)
+        public RefreshTokenAlreadyUsedException() : base(HttpStatusCode.Conflict)
         {
 
         }

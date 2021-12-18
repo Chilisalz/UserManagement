@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
-using UserManagementService.Contracts.Requests;
 using UserManagementService.Contracts.Responses;
 using UserManagementService.Dtos;
-using UserManagementService.Exceptions;
-using UserManagementService.Services;
+using UserManagementService.Dtos.ChiliUser;
+using UserManagementService.Services.Contracts;
 
 namespace UserManagementService.Controllers
 {
@@ -19,108 +17,43 @@ namespace UserManagementService.Controllers
         {
             _identityService = identityService;
         }
-
         [EnableCors("CorsPolicy")]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto request)
         {
-            try
+            return Ok(new ChiliResponse<ChiliUserDto>()
             {
-                var authResponse = await _identityService.RegisterAsync(request);
-                return Ok(new ChiliResponse<ChiliUserDto>()
-                {
-                    Status = ResponseStatus.success,
-                    Data = authResponse,
-                });
-            }
-            catch (Exception ex)
-            {
-                if (ex is WebApiException)
-                    return StatusCode(Convert.ToInt32((ex as WebApiException).StatusCode), new ChiliResponse<object>()
-                    {
-                        Status = ResponseStatus.error,
-                        Errors = new[] { ex.Message }
-                    });
-                else
-                    return StatusCode(500, new ChiliListResponse<object>()
-                    {
-                        Status = ResponseStatus.error,
-                        Errors = new [] { ex.Message }
-                    });
-            }
+                Status = ResponseStatus.success,
+                Data = await _identityService.RegisterAsync(request),
+            });
         }
         [EnableCors("CorsPolicy")]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto request)
         {
-            try
+            return Ok(new ChiliResponse<AuthenticationDto>
             {
-                var authResponse = await _identityService.LoginAsync(request);
-
-                return Ok(new ChiliResponse<AuthenticationDto>
-                {
-                    Status = ResponseStatus.success,
-                    Data = authResponse
-                });
-            }
-            catch (Exception ex)
-            {
-                if (ex is WebApiException)
-                    return StatusCode(Convert.ToInt32((ex as WebApiException).StatusCode), new ChiliResponse<object>()
-                    {
-                        Status = ResponseStatus.error,
-                        Errors = new[] { ex.Message }
-                    });
-                else
-                    return StatusCode(500, new ChiliListResponse<object>()
-                    {
-                        Status = ResponseStatus.error,
-                        Errors = new[] { ex.Message }
-                    });
-            }
+                Status = ResponseStatus.success,
+                Data = await _identityService.LoginAsync(request)
+            });
         }
         [HttpPost("Token/Refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] AuthenticationDto request)
         {
-            try
+            return Ok(new ChiliResponse<AuthenticationDto>
             {
-                var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
-                return Ok(new ChiliResponse<AuthenticationDto>
-                {
-                    Status = ResponseStatus.success,
-                    Data = authResponse
-                });
-            }
-
-            catch (Exception ex)
-            {
-                return BadRequest(new ChiliResponse<AuthenticationDto>()
-                {
-                    Status = ResponseStatus.error,
-                    Errors = new[] { ex.Message }
-                });
-            }
+                Status = ResponseStatus.success,
+                Data = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken)
+            });
         }
         [HttpPost("Token/Verify")]
-        public IActionResult VerifyToken([FromBody] VerifyTokenRequest request)
+        public IActionResult VerifyToken([FromBody] VerifyTokenDto request)
         {
-            try
+            _identityService.VerifyToken(request.Token);
+            return Ok(new ChiliResponse<object>()
             {
-                var verifyResponse = _identityService.VerifyToken(request.Token);
-                return Ok(new ChiliResponse<string>()
-                {
-                    Status = ResponseStatus.success,
-                    Data = request.Token,
-                });
-            }
-            catch (InvalidTokenException ex)
-            {
-                return BadRequest(new ChiliResponse<string>()
-                {
-                    Status = ResponseStatus.error,
-                    Errors = new[] { ex.Message }
-                });
-            }
+                Status = ResponseStatus.success
+            });
         }
     }
 }

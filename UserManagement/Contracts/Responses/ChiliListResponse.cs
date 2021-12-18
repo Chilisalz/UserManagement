@@ -1,4 +1,4 @@
-﻿using UserManagementService.Services.ServiceResult;
+﻿using UserManagementService.Dtos;
 
 namespace UserManagementService.Contracts.Responses
 {

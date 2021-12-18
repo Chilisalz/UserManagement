@@ -28,7 +28,7 @@ namespace UserManagement.IntegrationTests.UserControllerTests
         public async Task GetUserById_WithExistingId_ReturnsOk()
         {
             // Arrange
-            var validGuid = "0da09c36-50ac-44fb-a102-8b528bcbad51";
+            var validGuid = "bf9657c5-0827-44bb-b902-f627d24c0313";
             // Act
             var response = await TestClient.GetAsync($"/api/ChiliUser/User/{validGuid}");
             // Assert

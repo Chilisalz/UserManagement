@@ -22,7 +22,7 @@ namespace UserManagement.IntegrationTests.UserControllerTests
             // Act
             var response = await TestClient.DeleteAsync($"/api/ChiliUser/{invalidGuid}");
             // Assert
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         [Fact]
         public async Task DeleteUser_WithExistingId_ReturnsSuccess()

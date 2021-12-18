@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UserManagementService.Contracts.Requests
+namespace UserManagementService.Dtos
 {
-    public class ChangePasswordRequest
+    public class ChangePasswordDto
     {
         [Required(ErrorMessage = "Old Password cannot be empty.")]
         [DataType(DataType.Password)]
