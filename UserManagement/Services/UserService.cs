@@ -34,15 +34,17 @@ namespace UserManagementService.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<GetUsersResult> GetAllUsersAsync(int page)
+        public async Task<GetUsersResultDto> GetAllUsersAsync(int page)
         {
             var users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
             var itemsTotal = _context.Users.Count();
-            return new GetUsersResult() { Users = users, Pagination = new Pagination(page, users.Count, itemsTotal) };
+            return new GetUsersResultDto() { Users = _mapper.Map<List<ChiliUserAdminViewDto>>(users), Pagination = new Pagination(page, users.Count, itemsTotal) };
         }
-        public async Task<ChiliUser> GetChiliUserByIdAsync(Guid id)
+        public async Task<ChiliUserDto> GetChiliUserByIdAsync(Guid id)
         {
-            return await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id) ?? throw new UserNotFoundException($"User with id {id} not found");
+            var user = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id) ?? throw new UserNotFoundException($"User with id {id} not found");
+
+            return _mapper.Map<ChiliUserDto>(user);            
         }
         public async Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request)
         {

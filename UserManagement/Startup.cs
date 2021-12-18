@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using UserManagementService.Contracts.Responses;
 using UserManagementService.Extensions;
 using UserManagementService.Services;
 
@@ -24,15 +27,18 @@ namespace UserManagementService
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-            services.AddCors(options =>
+            services.Configure<ApiBehaviorOptions>(apiBehaviorOptions =>
+            apiBehaviorOptions.InvalidModelStateResponseFactory = actionContext =>
             {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
+                return new BadRequestObjectResult(new ChiliResponse<object>()
+                {
+                    Status = ResponseStatus.error,
+                    Errors = actionContext.ModelState.Values.SelectMany(x => x.Errors
+            .Select(x => x.ErrorMessage))
+                });
             });
-        }
 
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app/*, IWebHostEnvironment env*/)
@@ -46,6 +52,8 @@ namespace UserManagementService
 
             app.UseRouting();
 
+            app.UseCors("CorsPolicy");
+
             app.UseAuthentication();
 
             app.UseAuthorization();
@@ -54,6 +62,8 @@ namespace UserManagementService
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }

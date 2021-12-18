@@ -19,11 +19,9 @@ namespace UserManagementService.Controllers
     public class ChiliUserController : ControllerBase
     {
         private readonly IUserService _chiliUserService;
-        private readonly IMapper _mapper;
-        public ChiliUserController(IUserService chiliUserService, IMapper mapper)
+        public ChiliUserController(IUserService chiliUserService)
         {
             _chiliUserService = chiliUserService;
-            _mapper = mapper;
         }
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
@@ -33,16 +31,16 @@ namespace UserManagementService.Controllers
                 var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
                 return Ok(new ChiliResponse<ChiliUserDto>()
                 {
-                    Data = _mapper.Map<ChiliUserDto>(user),
+                    Data = user,
                     Status = ResponseStatus.success
                 });
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(new ChiliResponse<Guid>()
+                return NotFound(new ChiliResponse<object>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
         }
@@ -55,7 +53,7 @@ namespace UserManagementService.Controllers
             {
                 Status = ResponseStatus.success,
                 Pagination = users.Pagination,
-                Data = _mapper.Map<List<ChiliUserAdminViewDto>>(users.Users)
+                Data = users.Users
             });
         }
         [HttpPut("{userId}")]
@@ -65,7 +63,7 @@ namespace UserManagementService.Controllers
             {
                 return BadRequest(new ChiliResponse<ChiliUserDto>()
                 {
-                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
                     Status = ResponseStatus.fail
                 });
             }
@@ -85,13 +83,13 @@ namespace UserManagementService.Controllers
                     return NotFound(new ChiliResponse<ChiliUserDto>()
                     {
                         Status = ResponseStatus.error,
-                        Error = ex.Message
+                        Errors = new[] { ex.Message }
                     });
                 else if (ex is UsernameAlreadyTakenException || ex is EmailAlreadyTakenException)
                     return Conflict(new ChiliResponse<ChiliUserDto>()
                     {
                         Status = ResponseStatus.error,
-                        Error = ex.Message
+                        Errors = new[] { ex.Message }
                     });
                 else
                     throw;
@@ -103,7 +101,7 @@ namespace UserManagementService.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ChiliResponse<Guid>()
                 {
-                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)),
                     Status = ResponseStatus.error
                 });
             try
@@ -120,7 +118,7 @@ namespace UserManagementService.Controllers
                 return NotFound(new ChiliResponse<Guid>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
             catch (InvalidPasswordException ex)
@@ -128,7 +126,7 @@ namespace UserManagementService.Controllers
                 return Conflict(new ChiliResponse<Guid>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
         }
@@ -149,7 +147,7 @@ namespace UserManagementService.Controllers
                 return NotFound(new ChiliResponse<Guid>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
         }
@@ -179,7 +177,7 @@ namespace UserManagementService.Controllers
             {
                 return NotFound(new ChiliResponse<Guid>()
                 {
-                    Error = ex.Message,
+                    Errors = new[] { ex.Message },
                     Status = ResponseStatus.error
                 });
             }
@@ -187,7 +185,7 @@ namespace UserManagementService.Controllers
             {
                 return BadRequest(new ChiliResponse<Guid>()
                 {
-                    Error = ex.Message,
+                    Errors = new[] { ex.Message },
                     Status = ResponseStatus.error
                 });
             }
@@ -209,7 +207,7 @@ namespace UserManagementService.Controllers
                 return NotFound(new ChiliResponse<SecurityQuestion>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
         }

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.Contracts.Responses;
@@ -20,17 +20,10 @@ namespace UserManagementService.Controllers
             _identityService = identityService;
         }
 
+        [EnableCors("CorsPolicy")]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ChiliResponse<UserRegistrationDto>()
-                {
-                    Status = ResponseStatus.error,
-                    Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString()
-                });
-            }
             try
             {
                 var authResponse = await _identityService.RegisterAsync(request);
@@ -46,22 +39,23 @@ namespace UserManagementService.Controllers
                     return StatusCode(Convert.ToInt32((ex as WebApiException).StatusCode), new ChiliResponse<object>()
                     {
                         Status = ResponseStatus.error,
-                        Error = ex.Message
+                        Errors = new[] { ex.Message }
                     });
                 else
                     return StatusCode(500, new ChiliListResponse<object>()
                     {
                         Status = ResponseStatus.error,
-                        Error = ex.Message
+                        Errors = new [] { ex.Message }
                     });
             }
-        }        
+        }
+        [EnableCors("CorsPolicy")]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto request)
         {
             try
             {
-                var authResponse = await _identityService.LoginAsync(request.UserName, request.Password);
+                var authResponse = await _identityService.LoginAsync(request);
 
                 return Ok(new ChiliResponse<AuthenticationDto>
                 {
@@ -71,20 +65,18 @@ namespace UserManagementService.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is UserNotFoundException)
-                    return NotFound(new ChiliResponse<UserLoginDto>()
+                if (ex is WebApiException)
+                    return StatusCode(Convert.ToInt32((ex as WebApiException).StatusCode), new ChiliResponse<object>()
                     {
                         Status = ResponseStatus.error,
-                        Error = ex.Message
-                    });
-                else if (ex is InvalidPasswordException)
-                    return Conflict(new ChiliResponse<UserLoginDto>()
-                    {
-                        Status = ResponseStatus.error,
-                        Error = ex.Message
+                        Errors = new[] { ex.Message }
                     });
                 else
-                    throw;
+                    return StatusCode(500, new ChiliListResponse<object>()
+                    {
+                        Status = ResponseStatus.error,
+                        Errors = new[] { ex.Message }
+                    });
             }
         }
         [HttpPost("Token/Refresh")]
@@ -105,7 +97,7 @@ namespace UserManagementService.Controllers
                 return BadRequest(new ChiliResponse<AuthenticationDto>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message,
+                    Errors = new[] { ex.Message }
                 });
             }
         }
@@ -126,7 +118,7 @@ namespace UserManagementService.Controllers
                 return BadRequest(new ChiliResponse<string>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message
+                    Errors = new[] { ex.Message }
                 });
             }
         }

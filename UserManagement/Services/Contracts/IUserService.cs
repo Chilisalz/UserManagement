@@ -10,8 +10,8 @@ namespace UserManagementService.Services
 {
     public interface IUserService
     {
-        Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
-        Task<GetUsersResult> GetAllUsersAsync(int page);
+        Task<ChiliUserDto> GetChiliUserByIdAsync(Guid id);
+        Task<GetUsersResultDto> GetAllUsersAsync(int page);
         Task<bool> DeleteUserAsync(Guid id);
         Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request);
         Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request);

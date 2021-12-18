@@ -63,18 +63,18 @@ namespace UserManagementService.Services
 
             return _mapper.Map<ChiliUserDto>(newUser);
         }
-        public async Task<AuthenticationDto> LoginAsync(string userName, string password)
+        public async Task<AuthenticationDto> LoginAsync(UserLoginDto request)
         {
-            ChiliUser user = await _context.Users.FindByUsernameAsync(userName);
+            ChiliUser user = await _context.Users.FindByUsernameAsync(request.UserName);
 
             if (user == null)
             {
-                user = await _context.Users.FindByEmailAsync(userName);
+                user = await _context.Users.FindByEmailAsync(request.UserName);
                 if (user == null)
-                    throw new UserNotFoundException($"User with username or email {userName} not found");
+                    throw new UserNotFoundException($"User with username or email {request.UserName} not found");
             }
             var passwordHasher = new PasswordHasher<ChiliUser>();
-            var userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            var userHasValidPassword = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
 
             if (userHasValidPassword == PasswordVerificationResult.Failed)
