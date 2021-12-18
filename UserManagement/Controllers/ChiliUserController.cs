@@ -10,6 +10,7 @@ using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
 using UserManagementService.Models;
 using UserManagementService.Services;
+using UserManagementService.Services.ServiceResult;
 
 namespace UserManagementService.Controllers
 {
@@ -30,27 +31,31 @@ namespace UserManagementService.Controllers
             try
             {
                 var user = await _chiliUserService.GetChiliUserByIdAsync(userId);
-                return Ok(new BaseResponse<ChiliUserDto>()
+                return Ok(new ChiliResponse<ChiliUserDto>()
                 {
-                    Data = _mapper.Map<ChiliUserDto>(user)
+                    Data = _mapper.Map<ChiliUserDto>(user),
+                    Status = ResponseStatus.success
                 });
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(new BaseResponse<Guid>()
+                return NotFound(new ChiliResponse<Guid>()
                 {
-                    Data = userId,
+                    Status = ResponseStatus.error,
                     Error = ex.Message
                 });
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{page}/users")]
+        public async Task<IActionResult> GetAll([FromRoute] int page)
         {
-            var users = await _chiliUserService.GetAllUsersAsync();
-            return Ok(new BaseResponse<List<ChiliUserDto>>()
+            var users = await _chiliUserService.GetAllUsersAsync(page);
+
+            return Ok(new ChiliListResponse<List<ChiliUserAdminViewDto>>()
             {
-                Data = _mapper.Map<List<ChiliUserDto>>(users)
+                Status = ResponseStatus.success,
+                Pagination = users.Pagination,
+                Data = _mapper.Map<List<ChiliUserAdminViewDto>>(users.Users)
             });
         }
         [HttpPut("{userId}")]
@@ -58,33 +63,34 @@ namespace UserManagementService.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseResponse<ChiliUserDto>()
+                return BadRequest(new ChiliResponse<ChiliUserDto>()
                 {
                     Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
-                    Data = request
+                    Status = ResponseStatus.fail
                 });
             }
             try
             {
                 var updateUserResult = await _chiliUserService.UpdateUserAsync(userId, request);
 
-                return Ok(new BaseResponse<ChiliUserDto>()
+                return Ok(new ChiliResponse<ChiliUserDto>()
                 {
+                    Status = ResponseStatus.success,
                     Data = updateUserResult,
                 });
             }
             catch (Exception ex)
             {
                 if (ex is UserNotFoundException)
-                    return NotFound(new BaseResponse<ChiliUserDto>()
+                    return NotFound(new ChiliResponse<ChiliUserDto>()
                     {
-                        Data = request,
+                        Status = ResponseStatus.error,
                         Error = ex.Message
                     });
                 else if (ex is UsernameAlreadyTakenException || ex is EmailAlreadyTakenException)
-                    return Conflict(new BaseResponse<ChiliUserDto>()
+                    return Conflict(new ChiliResponse<ChiliUserDto>()
                     {
-                        Data = request,
+                        Status = ResponseStatus.error,
                         Error = ex.Message
                     });
                 else
@@ -95,32 +101,33 @@ namespace UserManagementService.Controllers
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordRequest passwordRequest)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new BaseResponse<Guid>()
+                return BadRequest(new ChiliResponse<Guid>()
                 {
                     Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString(),
-                    Data = userId
+                    Status = ResponseStatus.error
                 });
             try
             {
                 var changePasswordResult = await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
-                return Ok(new BaseResponse<Guid>()
+                return Ok(new ChiliResponse<Guid>()
                 {
-                    Data = userId
+                    Data = userId,
+                    Status = ResponseStatus.success
                 });
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(new BaseResponse<Guid>()
+                return NotFound(new ChiliResponse<Guid>()
                 {
-                    Data = userId,
+                    Status = ResponseStatus.error,
                     Error = ex.Message
                 });
             }
             catch (InvalidPasswordException ex)
             {
-                return Conflict(new BaseResponse<Guid>()
+                return Conflict(new ChiliResponse<Guid>()
                 {
-                    Data = userId,
+                    Status = ResponseStatus.error,
                     Error = ex.Message
                 });
             }
@@ -131,16 +138,17 @@ namespace UserManagementService.Controllers
             try
             {
                 var success = await _chiliUserService.DeleteUserAsync(userId);
-                return Ok(new BaseResponse<Guid>()
+                return Ok(new ChiliResponse<Guid>()
                 {
-                    Data = userId
+                    Data = userId,
+                    Status = ResponseStatus.success
                 });
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(new BaseResponse<Guid>()
+                return NotFound(new ChiliResponse<Guid>()
                 {
-                    Data = userId,
+                    Status = ResponseStatus.error,
                     Error = ex.Message
                 });
             }
@@ -149,7 +157,7 @@ namespace UserManagementService.Controllers
         public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
         {
             var questions = await _chiliUserService.GetAllSecurityQuestionsAsync();
-            return Ok(new BaseResponse<List<SecurityQuestion>>()
+            return Ok(new ChiliResponse<List<SecurityQuestion>>()
             {
                 Status = ResponseStatus.success,
                 Data = questions
@@ -161,25 +169,26 @@ namespace UserManagementService.Controllers
             try
             {
                 var verificationResult = await _chiliUserService.ValidateSecretAnswerAsync(request);
-                return Ok(new BaseResponse<Guid>()
+                return Ok(new ChiliResponse<Guid>()
                 {
-                    Data = request.UserId
+                    Data = request.UserId,
+                    Status = ResponseStatus.success
                 });
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(new BaseResponse<Guid>()
+                return NotFound(new ChiliResponse<Guid>()
                 {
                     Error = ex.Message,
-                    Data = request.UserId
+                    Status = ResponseStatus.error
                 });
             }
             catch (WrongSecretAnswerException ex)
             {
-                return BadRequest(new BaseResponse<Guid>()
+                return BadRequest(new ChiliResponse<Guid>()
                 {
                     Error = ex.Message,
-                    Data = request.UserId
+                    Status = ResponseStatus.error
                 });
             }
         }
@@ -189,7 +198,7 @@ namespace UserManagementService.Controllers
             try
             {
                 var question = await _chiliUserService.GetSecurityQuestionOfUserAsync(email);
-                return Ok(new BaseResponse<SecurityQuestion>()
+                return Ok(new ChiliResponse<SecurityQuestion>()
                 {
                     Status = ResponseStatus.success,
                     Data = question
@@ -197,9 +206,9 @@ namespace UserManagementService.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return Ok(new BaseResponse<SecurityQuestion>()
+                return NotFound(new ChiliResponse<SecurityQuestion>()
                 {
-                    Status = ResponseStatus.success,
+                    Status = ResponseStatus.error,
                     Error = ex.Message
                 });
             }

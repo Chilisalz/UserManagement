@@ -25,7 +25,7 @@ namespace UserManagementService.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseResponse<UserRegistrationDto>()
+                return BadRequest(new ChiliResponse<UserRegistrationDto>()
                 {
                     Status = ResponseStatus.error,
                     Error = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)).ToString()
@@ -34,7 +34,7 @@ namespace UserManagementService.Controllers
             try
             {
                 var authResponse = await _identityService.RegisterAsync(request);
-                return Ok(new BaseResponse<ChiliUserDto>()
+                return Ok(new ChiliResponse<ChiliUserDto>()
                 {
                     Status = ResponseStatus.success,
                     Data = authResponse,
@@ -42,22 +42,20 @@ namespace UserManagementService.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is EmailAlreadyTakenException || ex is UsernameAlreadyTakenException)
-                    return Conflict(new BaseResponse<UserRegistrationDto>()
-                    {
-                        Status = ResponseStatus.error,
-                        Error = ex.Message
-                    });
-                else if (ex is SecretQuestionNotFoundException)
-                    return NotFound(new BaseResponse<UserRegistrationDto>()
+                if (ex is WebApiException)
+                    return StatusCode(Convert.ToInt32((ex as WebApiException).StatusCode), new ChiliResponse<object>()
                     {
                         Status = ResponseStatus.error,
                         Error = ex.Message
                     });
                 else
-                    throw;
+                    return StatusCode(500, new ChiliListResponse<object>()
+                    {
+                        Status = ResponseStatus.error,
+                        Error = ex.Message
+                    });
             }
-        }
+        }        
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto request)
         {
@@ -65,22 +63,22 @@ namespace UserManagementService.Controllers
             {
                 var authResponse = await _identityService.LoginAsync(request.UserName, request.Password);
 
-                return Ok(new BaseResponse<AuthenticationDto>
+                return Ok(new ChiliResponse<AuthenticationDto>
                 {
-                    Status= ResponseStatus.success,
+                    Status = ResponseStatus.success,
                     Data = authResponse
                 });
             }
             catch (Exception ex)
             {
                 if (ex is UserNotFoundException)
-                    return NotFound(new BaseResponse<UserLoginDto>()
+                    return NotFound(new ChiliResponse<UserLoginDto>()
                     {
                         Status = ResponseStatus.error,
                         Error = ex.Message
                     });
                 else if (ex is InvalidPasswordException)
-                    return Conflict(new BaseResponse<UserLoginDto>()
+                    return Conflict(new ChiliResponse<UserLoginDto>()
                     {
                         Status = ResponseStatus.error,
                         Error = ex.Message
@@ -95,7 +93,7 @@ namespace UserManagementService.Controllers
             try
             {
                 var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
-                return Ok(new BaseResponse<AuthenticationDto>
+                return Ok(new ChiliResponse<AuthenticationDto>
                 {
                     Status = ResponseStatus.success,
                     Data = authResponse
@@ -104,10 +102,10 @@ namespace UserManagementService.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(new BaseResponse<AuthenticationDto>()
+                return BadRequest(new ChiliResponse<AuthenticationDto>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message,                    
+                    Error = ex.Message,
                 });
             }
         }
@@ -117,7 +115,7 @@ namespace UserManagementService.Controllers
             try
             {
                 var verifyResponse = _identityService.VerifyToken(request.Token);
-                return Ok(new BaseResponse<string>()
+                return Ok(new ChiliResponse<string>()
                 {
                     Status = ResponseStatus.success,
                     Data = request.Token,
@@ -125,10 +123,10 @@ namespace UserManagementService.Controllers
             }
             catch (InvalidTokenException ex)
             {
-                return BadRequest(new BaseResponse<string>()
+                return BadRequest(new ChiliResponse<string>()
                 {
                     Status = ResponseStatus.error,
-                    Error = ex.Message                    
+                    Error = ex.Message
                 });
             }
         }

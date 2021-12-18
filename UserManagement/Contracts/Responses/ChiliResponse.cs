@@ -2,7 +2,7 @@
 
 namespace UserManagementService.Contracts.Responses
 {
-    public class BaseResponse<T>
+    public class ChiliResponse<T>
     {
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ResponseStatus Status { get; set; }

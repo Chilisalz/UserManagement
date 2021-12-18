@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
-    public class TokenHasntExpiredException : Exception
+    public class TokenHasntExpiredException : WebApiException
     {
-        public TokenHasntExpiredException()
+        public TokenHasntExpiredException() : base(HttpStatusCode.Conflict)
         {
 
         }
 
-        public TokenHasntExpiredException(string message) : base(message)
+        public TokenHasntExpiredException(string message) : base(message, HttpStatusCode.Conflict)
         {
 
         }
 
-        public TokenHasntExpiredException(string message, Exception inner) : base(message, inner)
+        public TokenHasntExpiredException(string message, Exception inner) : base(message, inner, HttpStatusCode.Conflict)
         {
 
         }

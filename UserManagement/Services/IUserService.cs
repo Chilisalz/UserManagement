@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.Dtos;
 using UserManagementService.Models;
+using UserManagementService.Services.ServiceResult;
 
 namespace UserManagementService.Services
 {
     public interface IUserService
     {
         Task<ChiliUser> GetChiliUserByIdAsync(Guid id);
-        Task<List<ChiliUser>> GetAllUsersAsync();
+        Task<GetUsersResult> GetAllUsersAsync(int page);
         Task<bool> DeleteUserAsync(Guid id);
         Task<ChiliUserDto> UpdateUserAsync(Guid id, ChiliUserDto request);
         Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request);

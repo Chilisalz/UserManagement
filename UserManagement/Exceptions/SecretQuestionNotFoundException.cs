@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
-    public class SecretQuestionNotFoundException : Exception
+    public class SecretQuestionNotFoundException : WebApiException
     {
-        public SecretQuestionNotFoundException()
+        public SecretQuestionNotFoundException() : base(HttpStatusCode.NotFound)
         {
 
         }
 
-        public SecretQuestionNotFoundException(string message) : base(message)
-        {
-
-        }
-
-        public SecretQuestionNotFoundException(string message, Exception inner) : base(message, inner)
-        {
-
-        }
+        public SecretQuestionNotFoundException(string message) : base(message, HttpStatusCode.NotFound) { }
+        public SecretQuestionNotFoundException(string message, Exception inner) : base(message, inner, HttpStatusCode.NotFound) { }
     }
 }

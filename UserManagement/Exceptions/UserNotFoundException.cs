@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
-    public class UserNotFoundException : Exception
+    public class UserNotFoundException : WebApiException
     {
-        public UserNotFoundException()
+        public UserNotFoundException() : base(HttpStatusCode.NotFound)
         {
 
         }
 
-        public UserNotFoundException(string message) : base(message)
+        public UserNotFoundException(string message) : base(message, HttpStatusCode.NotFound)
         {
 
         }
 
-        public UserNotFoundException(string message, Exception inner) : base(message, inner)
+        public UserNotFoundException(string message, Exception inner) : base(message, inner, HttpStatusCode.NotFound)
         {
 
         }

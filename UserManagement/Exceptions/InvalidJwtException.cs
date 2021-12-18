@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace UserManagementService.Exceptions
 {
-    public class InvalidJwtException : Exception
+    public class InvalidJwtException : WebApiException
     {
-        public InvalidJwtException()
+        public InvalidJwtException() : base(HttpStatusCode.Conflict)
         {
 
         }
 
-        public InvalidJwtException(string message) : base(message)
+        public InvalidJwtException(string message) : base(message, HttpStatusCode.Conflict)
         {
 
         }
 
-        public InvalidJwtException(string message, Exception inner) : base(message, inner)
+        public InvalidJwtException(string message, Exception inner) : base(message, inner, HttpStatusCode.Conflict)
         {
 
         }

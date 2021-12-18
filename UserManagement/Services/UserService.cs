@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UserManagementService.Contracts.Requests;
 using UserManagementService.DataAccessLayer;
@@ -10,6 +11,7 @@ using UserManagementService.Dtos;
 using UserManagementService.Exceptions;
 using UserManagementService.Extensions;
 using UserManagementService.Models;
+using UserManagementService.Services.ServiceResult;
 
 namespace UserManagementService.Services
 {
@@ -32,9 +34,11 @@ namespace UserManagementService.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<List<ChiliUser>> GetAllUsersAsync()
+        public async Task<GetUsersResult> GetAllUsersAsync(int page)
         {
-            return await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).ToListAsync();
+            var users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
+            var itemsTotal = _context.Users.Count();
+            return new GetUsersResult() { Users = users, Pagination = new Pagination(page, users.Count, itemsTotal) };
         }
         public async Task<ChiliUser> GetChiliUserByIdAsync(Guid id)
         {
