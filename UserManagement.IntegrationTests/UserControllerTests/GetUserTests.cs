@@ -30,7 +30,7 @@ namespace UserManagement.IntegrationTests.UserControllerTests
             // Arrange
             var validGuid = "bf9657c5-0827-44bb-b902-f627d24c0313";
             // Act
-            var response = await TestClient.GetAsync($"/api/ChiliUser/User/{validGuid}");
+            var response = await TestClient.GetAsync($"/api/ChiliUser/{validGuid}");
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }

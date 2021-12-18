@@ -30,7 +30,7 @@ namespace UserManagement.IntegrationTests.UserControllerTests
             // Arrange
             var validId = "8c8dd0dd-a6b6-478d-a298-1011cb5bf060";
             // Act
-            var response = await TestClient.DeleteAsync($"/api/ChiliUser/User/{validId}");
+            var response = await TestClient.DeleteAsync($"/api/ChiliUser/{validId}");
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
