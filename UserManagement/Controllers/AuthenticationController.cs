@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using UserManagementService.Contracts.Responses;
 using UserManagementService.Dtos;
 using UserManagementService.Dtos.ChiliUser;
+using UserManagementService.Responses;
 using UserManagementService.Services.Contracts;
 
 namespace UserManagementService.Controllers

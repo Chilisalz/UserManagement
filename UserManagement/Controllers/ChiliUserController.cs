@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UserManagementService.Contracts.Responses;
 using UserManagementService.Dtos;
 using UserManagementService.Dtos.ChiliUser;
 using UserManagementService.Models;
+using UserManagementService.Responses;
 using UserManagementService.Services.Contracts;
 
 namespace UserManagementService.Controllers
@@ -15,13 +16,16 @@ namespace UserManagementService.Controllers
     public class ChiliUserController : ControllerBase
     {
         private readonly IUserService _chiliUserService;
-        public ChiliUserController(IUserService chiliUserService)
+        private readonly ILogger _logger;
+        public ChiliUserController(IUserService chiliUserService, ILogger<ChiliUserController> logger)
         {
             _chiliUserService = chiliUserService;
+            _logger = logger;
         }
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get([FromRoute] Guid userId)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/{userId}");
             return Ok(new ChiliResponse<ChiliUserDto>()
             {
                 Data = await _chiliUserService.GetChiliUserByIdAsync(userId),

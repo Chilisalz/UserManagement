@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using UserManagementService.Contracts.Responses;
 using UserManagementService.Extensions;
 using UserManagementService.Middleware;
+using UserManagementService.Responses;
 using UserManagementService.Services;
 using UserManagementService.Services.Contracts;
 

@@ -1,4 +1,4 @@
-﻿namespace UserManagementService.Contracts.Responses
+﻿namespace UserManagementService.Responses
 {
     public enum ResponseStatus
     {

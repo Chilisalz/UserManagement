@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,12 @@ namespace UserManagementService.Services
     {
         private readonly UserManagementContext _context;
         private readonly IMapper _mapper;
-        public UserService(UserManagementContext context, IMapper mapper)
+        private readonly ILogger _logger;
+        public UserService(UserManagementContext context, IMapper mapper, ILogger<UserService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task DeleteUserAsync(Guid id)
@@ -36,7 +39,7 @@ namespace UserManagementService.Services
             _ = await _context.SaveChangesAsync();
         }
         public async Task<GetUsersResultDto> GetAllUsersAsync(int page)
-        {
+        {            
             List<ChiliUser> users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
             return new GetUsersResultDto()
             {

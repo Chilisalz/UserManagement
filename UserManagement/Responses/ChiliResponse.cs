@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UserManagementService.Contracts.Responses
+namespace UserManagementService.Responses
 {
     public class ChiliResponse<T>
     {

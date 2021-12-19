@@ -1,6 +1,6 @@
 ﻿using UserManagementService.Dtos;
 
-namespace UserManagementService.Contracts.Responses
+namespace UserManagementService.Responses
 {
     public class ChiliListResponse<T> : ChiliResponse<T>
     {
