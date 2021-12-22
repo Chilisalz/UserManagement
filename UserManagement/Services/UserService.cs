@@ -39,7 +39,7 @@ namespace UserManagementService.Services
             _ = await _context.SaveChangesAsync();
         }
         public async Task<GetUsersResultDto> GetAllUsersAsync(int page)
-        {            
+        {
             List<ChiliUser> users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
             return new GetUsersResultDto()
             {
@@ -110,6 +110,12 @@ namespace UserManagementService.Services
             PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
                 throw new WrongSecretAnswerException($"Wrong secret answer");
+        }
+
+        public List<ChiliUserNameDto> MapChiliUser(List<Guid> request)
+        {
+            var users = _context.Users.Where(u => request.Contains(u.Id));
+            return _mapper.Map<List<ChiliUserNameDto>>(users);
         }
     }
 }

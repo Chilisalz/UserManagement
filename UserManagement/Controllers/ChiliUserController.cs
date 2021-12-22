@@ -88,5 +88,15 @@ namespace UserManagementService.Controllers
                 Status = ResponseStatus.success
             });
         }
+        [HttpPost("MapUsers")]
+        public IActionResult MapChiliUsers([FromBody] List<Guid> request)
+        {
+            var users = _chiliUserService.MapChiliUser(request);
+            return Ok(new ChiliResponse<List<ChiliUserNameDto>>()
+            {
+                Status = ResponseStatus.success,
+                Data = users
+            });
+        }
     }
 }

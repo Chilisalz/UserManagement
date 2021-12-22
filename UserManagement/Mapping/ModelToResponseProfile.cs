@@ -10,6 +10,7 @@ namespace UserManagementService.Mapping
         {
             CreateMap<ChiliUser, ChiliUserDto>();
             CreateMap<ChiliUser, ChiliUserAdminViewDto>();
+            CreateMap<ChiliUser, ChiliUserNameDto>();
         }
     }
 }

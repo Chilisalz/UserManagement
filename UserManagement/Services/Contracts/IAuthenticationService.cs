@@ -8,7 +8,6 @@ namespace UserManagementService.Services.Contracts
     {
         Task<ChiliUserDto> RegisterAsync(UserRegistrationDto request);
         Task<AuthenticationDto> LoginAsync(UserLoginDto request);
-        Task<AuthenticationDto> RefreshTokenAsync(string token, string refreshToken);
-        void VerifyToken(string token);
+        Task<AuthenticationDto> VerifyTokenAsync(string token, string refreshToken);
     }
 }

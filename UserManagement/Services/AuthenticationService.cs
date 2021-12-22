@@ -81,19 +81,7 @@ namespace UserManagementService.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public void VerifyToken(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            try
-            {
-                tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
-            }
-            catch (Exception)
-            {
-                throw new InvalidTokenException("Invalid token");
-            }
-        }
-        public async Task<AuthenticationDto> RefreshTokenAsync(string token, string refreshToken)
+        public async Task<AuthenticationDto> VerifyTokenAsync(string token, string refreshToken)
         {
             ClaimsPrincipal validatedToken = GetPrincipalFromToken(token);
             if (validatedToken == null)
@@ -102,8 +90,8 @@ namespace UserManagementService.Services
             DateTime expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
-            if (expiryDateUtc > DateTime.UtcNow)
-                throw new TokenHasntExpiredException("This token hasn't expired yet");
+            //if (expiryDateUtc > DateTime.UtcNow)
+            //throw new TokenHasntExpiredException("This token hasn't expired yet");
 
             string jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
             RefreshToken storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
@@ -127,7 +115,7 @@ namespace UserManagementService.Services
             _context.RefreshTokens.Update(storedRefreshToken);
             await _context.SaveChangesAsync();
 
-            var user = await _context.Users.FindAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
+            var user = await _context.Users.FindByIdAsync(Guid.Parse(validatedToken.Claims.Single(x => x.Type == "id").Value));
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
@@ -155,6 +143,7 @@ namespace UserManagementService.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
+            _context.Entry(newUser).Reference(c => c.Role).Load();
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new[]
@@ -162,7 +151,8 @@ namespace UserManagementService.Services
                     new Claim(JwtRegisteredClaimNames.Sub, newUser.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
-                    new Claim("id", newUser.Id.ToString())
+                    new Claim("id", newUser.Id.ToString()),
+                    new Claim("userrole", newUser.Role.Rolename)
                 }),
                 Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
