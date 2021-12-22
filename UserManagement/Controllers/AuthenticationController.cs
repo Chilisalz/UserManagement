@@ -3,8 +3,24 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagementService.Dtos;
 using UserManagementService.Dtos.ChiliUser;
+using UserManagementService.Models;
 using UserManagementService.Responses;
 using UserManagementService.Services.Contracts;
+
+//TODO:
+//-VerifyToken:
+//	AccessToken / RefreshToken
+
+//AccessToken ist falsch -> BadRequest
+//RefreshToken ist falsch -> BadRequest
+
+//Beide richtig -> Success & neues AccessToken & neues RefreshToken
+
+//- Endpunkt für Liste von Userids zu userids+usernames
+
+//- Token erhält UserRolle als String
+
+
 
 namespace UserManagementService.Controllers
 {

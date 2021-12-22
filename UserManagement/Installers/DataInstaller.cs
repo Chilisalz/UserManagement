@@ -3,9 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
-#if RELEASE
-using System;
-#endif
 using UserManagementService.DataAccessLayer;
 
 namespace UserManagementService.Installers
