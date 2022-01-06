@@ -52,10 +52,7 @@ namespace UserManagementService
         public void Configure(IApplicationBuilder app/*, IWebHostEnvironment env*/)
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger(options =>
-            {
-                options.SerializeAsV2 = true;
-            });
+            app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Benutzerverwaltung v1"));
 
 
