@@ -35,6 +35,7 @@ namespace UserManagementService.Controllers
         [HttpGet("{page}/users")]
         public async Task<IActionResult> GetAll([FromRoute] int page)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/{page}/users");
             var users = await _chiliUserService.GetAllUsersAsync(page);
             return Ok(new ChiliListResponse<List<ChiliUserAdminViewDto>>()
             {
@@ -55,6 +56,7 @@ namespace UserManagementService.Controllers
         [HttpPut("{userId}/ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordDto passwordRequest)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/{userId}/ChangePassword");
             await _chiliUserService.ChangePasswordAsync(userId, passwordRequest);
             return Ok(new ChiliResponse<object>()
             {
@@ -64,6 +66,7 @@ namespace UserManagementService.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/{userId}");
             await _chiliUserService.DeleteUserAsync(userId);
             return Ok(new ChiliResponse<object>()
             {
@@ -73,6 +76,7 @@ namespace UserManagementService.Controllers
         [HttpGet("Secretquestion")]
         public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
         {
+            _logger.LogInformation($"Entering api/ChiliUser/Secretquestion");
             return Ok(new ChiliResponse<List<SecurityQuestion>>()
             {
                 Status = ResponseStatus.success,
@@ -82,6 +86,7 @@ namespace UserManagementService.Controllers
         [HttpPost("ValidateSecretAnswer")]
         public async Task<IActionResult> ValidateSecretAnswerAsync([FromBody] ValidateSecretAnswerDto request)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/ValidateSecretAnswer");
             await _chiliUserService.ValidateSecretAnswerAsync(request);
             return Ok(new ChiliResponse<object>()
             {
@@ -91,6 +96,7 @@ namespace UserManagementService.Controllers
         [HttpPost("MapUsers")]
         public IActionResult MapChiliUsers([FromBody] List<Guid> request)
         {
+            _logger.LogInformation($"Entering api/ChiliUser/MapUsers");
             var users = _chiliUserService.MapChiliUser(request);
             return Ok(new ChiliResponse<List<ChiliUserNameDto>>()
             {

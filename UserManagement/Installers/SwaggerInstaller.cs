@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace UserManagementService.Installers
 {
@@ -39,6 +41,14 @@ namespace UserManagementService.Installers
                         Array.Empty<string>()
                     }
                 });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var path = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                if (!File.Exists(path))
+                {
+                    using FileStream fs = new(path, FileMode.Create, FileAccess.Write);
+                }
+                c.IncludeXmlComments(path);
             });
         }
     }

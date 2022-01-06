@@ -37,15 +37,21 @@ namespace UserManagementService.Services
             ChiliUser existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
+            {                
                 throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
+            }
 
             existingUser = await _context.Users.FindByUsernameAsync(request.UserName);
             if (existingUser != null)
+            {
                 throw new UsernameAlreadyTakenException($"Username {request.UserName} is already used");
+            }
 
             SecurityQuestion SecretQuestion = await _context.SecurityQuestions.FirstOrDefaultAsync(x => x.Id == request.SecretQuestion);
             if (SecretQuestion == null)
+            {
                 throw new SecretQuestionNotFoundException($"Secretquestion with id {request.SecretQuestion} not found.");
+            }
 
             ChiliUser newUser = new()
             {

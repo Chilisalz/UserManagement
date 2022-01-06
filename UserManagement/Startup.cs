@@ -52,7 +52,10 @@ namespace UserManagementService
         public void Configure(IApplicationBuilder app/*, IWebHostEnvironment env*/)
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                options.SerializeAsV2 = true;
+            });
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Benutzerverwaltung v1"));
 
 
@@ -64,10 +67,6 @@ namespace UserManagementService
             app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.UseCors("CorsPolicy");
-
-            app.UseAuthentication();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
