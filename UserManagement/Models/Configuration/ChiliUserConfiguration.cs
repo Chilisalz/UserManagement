@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -21,6 +22,16 @@ namespace UserManagementService.Models.Configuration
                 SecretQuestionId = Guid.Parse("f7f78ebd-22d5-4861-893e-7dceee4ee4fe")
             };
 
+            var admin2 = new ChiliUser
+            {
+                Id = Guid.Parse("0da09c36-50ac-44fb-a102-8b528bcbad58"),
+                Email = "nis@chiliboard.de",
+                RegistrationDate = DateTime.Now,
+                ChiliUserRoleId = Guid.Parse("39bf46f0-cc42-438f-866c-c20c393a307b"),
+                UserName = "nis",
+                SecretQuestionId = Guid.Parse("f3124fb0-79ce-403b-8cd4-eceafaf2a0ff")
+            };
+
             var casualUser = new ChiliUser()
             {
                 Id = Guid.Parse("bf9657c5-0827-44bb-b902-f627d24c0313"),
@@ -40,22 +51,26 @@ namespace UserManagementService.Models.Configuration
                 SecretQuestionId = Guid.Parse("f3124fb0-79ce-403b-8cd4-eceafaf2a0ff")
             };
             var adminPassword = passwordHasher.HashPassword(adminUser, "admin");
+            var admin2Password = passwordHasher.HashPassword(adminUser, "dackel");
             var casualUserPassword = passwordHasher.HashPassword(casualUser, "casual");
             var catLoverPassword = passwordHasher.HashPassword(catLover, "cats");
 
             var adminAnswer = passwordHasher.HashPassword(adminUser, "1789");
+            var admin2Answer = passwordHasher.HashPassword(adminUser, "dackel");
             var casualUserAnswer = passwordHasher.HashPassword(casualUser, "Schmitz");
             var catLoverAnswer = passwordHasher.HashPassword(catLover, "Katzen");
 
             adminUser.PasswordHash = adminPassword;
+            admin2.PasswordHash = admin2Password;
             casualUser.PasswordHash = casualUserPassword;
             catLover.PasswordHash = catLoverPassword;
 
             adminUser.SecretAnswer = adminAnswer;
+            admin2.SecretAnswer = admin2Answer;
             casualUser.SecretAnswer = casualUserAnswer;
             catLover.SecretAnswer = catLoverAnswer;
 
-            builder.HasData(adminUser, casualUser, catLover);
+            builder.HasData(adminUser, casualUser, catLover, admin2);
         }
     }
 }

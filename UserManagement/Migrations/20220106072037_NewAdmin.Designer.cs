@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserManagementService.DataAccessLayer;
@@ -9,9 +10,10 @@ using UserManagementService.DataAccessLayer;
 namespace UserManagementService.Migrations
 {
     [DbContext(typeof(UserManagementContext))]
-    partial class UserManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20220106072037_NewAdmin")]
+    partial class NewAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,9 +62,9 @@ namespace UserManagementService.Migrations
                             Id = new Guid("0da09c36-50ac-44fb-a102-8b528bcbad51"),
                             ChiliUserRoleId = new Guid("39bf46f0-cc42-438f-866c-c20c393a307b"),
                             Email = "adminuser@chiliboard.de",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMoFpxlv0k75JcYxDckqwIM+Q/OUpBHnG0CGxUrGNbPe8SuCT9BgmnZ5Mb5091WAMg==",
-                            RegistrationDate = new DateTime(2022, 1, 6, 8, 25, 16, 835, DateTimeKind.Local).AddTicks(3218),
-                            SecretAnswer = "AQAAAAEAACcQAAAAEPefExEpvKEFIqh3cSOKiRu93rkydpnnig0u8J1IiQZMUv0ru6X5Y48DItMKhts2Pw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBzA6WvKNoJrYZJr2bNMv9nqVtizfSrZmfRPksxSV+nA6WHGvpMbTd0FYtVvHHQsnQ==",
+                            RegistrationDate = new DateTime(2022, 1, 6, 8, 20, 36, 704, DateTimeKind.Local).AddTicks(5899),
+                            SecretAnswer = "AQAAAAEAACcQAAAAENSqp3BOlNJvbUKU0+CnTXrooFYBg1GbtHwQuf4ZZgqstLdMSDGCHKb2V7dxW/95ow==",
                             SecretQuestionId = new Guid("f7f78ebd-22d5-4861-893e-7dceee4ee4fe"),
                             UserName = "admin"
                         },
@@ -71,9 +73,9 @@ namespace UserManagementService.Migrations
                             Id = new Guid("bf9657c5-0827-44bb-b902-f627d24c0313"),
                             ChiliUserRoleId = new Guid("372a7671-ab69-4450-b77f-306aeb4eb8f1"),
                             Email = "casualUser@web.de",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAnwfh0wE9Wssf31dZoBIG3QHj7ljGR9OTqwK7bQw+LyZm2buE9sx9F1RJEtzFXV3g==",
-                            RegistrationDate = new DateTime(2022, 1, 6, 8, 25, 16, 837, DateTimeKind.Local).AddTicks(9522),
-                            SecretAnswer = "AQAAAAEAACcQAAAAEAwPbNZSxsmcgy6YrkT5lS575mrqdpfNsxEd8A3eZFfjio83riTTcUtVsrgB14fDmA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL3W+0Em9YCHPfSfuABXrpXT7RpdNcO1fH4RuRwoDiOW6+A3ocLlb/JGCfeHJrbAcQ==",
+                            RegistrationDate = new DateTime(2022, 1, 6, 8, 20, 36, 707, DateTimeKind.Local).AddTicks(6223),
+                            SecretAnswer = "AQAAAAEAACcQAAAAEDL1AMl5ZcIv4JJ6cX7YcLcVKt18GA/NZEJvDWVmKWdZ4t8ZFodRR33khqZ+PoF/aw==",
                             SecretQuestionId = new Guid("5e1e640d-17cc-4d36-8e50-81deaeb6b215"),
                             UserName = "CasualUser69420"
                         },
@@ -82,9 +84,9 @@ namespace UserManagementService.Migrations
                             Id = new Guid("8c8dd0dd-a6b6-478d-a298-1011cb5bf060"),
                             ChiliUserRoleId = new Guid("372a7671-ab69-4450-b77f-306aeb4eb8f1"),
                             Email = "catlover@gmail.com",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOOx54WrvJyqlxKzryYaEVzJ8Epp8gzL5CKDWnN8N63CP/ks1OuUR8eUGaLgjjvE0Q==",
-                            RegistrationDate = new DateTime(2022, 1, 6, 8, 25, 16, 837, DateTimeKind.Local).AddTicks(9533),
-                            SecretAnswer = "AQAAAAEAACcQAAAAENjhiQ0jJfztyQikCFmivAqKRr+w6RrCw/UTPCvTcXxgE0OyWNh4H7Q3rEgtgmilqA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL0+HtHZGcctssHegA6T28jtrmIAuHadjb25KJIrrX4ja6AlCXXFTyFRnORVFuKD9A==",
+                            RegistrationDate = new DateTime(2022, 1, 6, 8, 20, 36, 707, DateTimeKind.Local).AddTicks(6233),
+                            SecretAnswer = "AQAAAAEAACcQAAAAEKVc1vi8MVcN3p3iddVHat8zjXgpYR1Wu7BZzpfcCiKN3QeuuSnHyInNCzwxBivFWw==",
                             SecretQuestionId = new Guid("f3124fb0-79ce-403b-8cd4-eceafaf2a0ff"),
                             UserName = "CatLover123"
                         },
@@ -93,9 +95,9 @@ namespace UserManagementService.Migrations
                             Id = new Guid("0da09c36-50ac-44fb-a102-8b528bcbad58"),
                             ChiliUserRoleId = new Guid("39bf46f0-cc42-438f-866c-c20c393a307b"),
                             Email = "nis@chiliboard.de",
-                            PasswordHash = "AQAAAAEAACcQAAAAEM4+PFxccFjRIJFhSIFf0yqL97ip4aD4UWCKdTKHszUvf0zx1a0jQ12HZa6Uxq64vQ==",
-                            RegistrationDate = new DateTime(2022, 1, 6, 8, 25, 16, 837, DateTimeKind.Local).AddTicks(9488),
-                            SecretAnswer = "AQAAAAEAACcQAAAAECfEPj0Kc3WkSjRBD+0A4PHc8fGBUFM/kYmOyVciwPGY4XJ6kH9Hd9E/u+VTewEt2Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBzA6WvKNoJrYZJr2bNMv9nqVtizfSrZmfRPksxSV+nA6WHGvpMbTd0FYtVvHHQsnQ==",
+                            RegistrationDate = new DateTime(2022, 1, 6, 8, 20, 36, 707, DateTimeKind.Local).AddTicks(6179),
+                            SecretAnswer = "AQAAAAEAACcQAAAAENSqp3BOlNJvbUKU0+CnTXrooFYBg1GbtHwQuf4ZZgqstLdMSDGCHKb2V7dxW/95ow==",
                             SecretQuestionId = new Guid("f3124fb0-79ce-403b-8cd4-eceafaf2a0ff"),
                             UserName = "nis"
                         });
