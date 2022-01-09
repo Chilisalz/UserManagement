@@ -85,7 +85,7 @@ namespace UserManagementService.Services
             if (user == null)
                 throw new UserNotFoundException($"User with id {id} not found");
             PasswordHasher<ChiliUser> passwordHasher = new();
-            if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.OldPassword) == PasswordVerificationResult.Failed)
+            if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
                 throw new InvalidPasswordException("Invalid password.");
 
             user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
