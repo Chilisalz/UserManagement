@@ -158,7 +158,8 @@ namespace UserManagementService.Services
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
                     new Claim("id", newUser.Id.ToString()),
-                    new Claim("userrole", newUser.Role.Rolename)
+                    new Claim("userrole", newUser.Role.Rolename),
+                    new Claim("secretQuestionId", newUser.SecretQuestionId.ToString())
                 }),
                 Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
