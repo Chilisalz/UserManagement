@@ -44,7 +44,7 @@ namespace UserManagementService.Services
             return new GetUsersResultDto()
             {
                 Users = _mapper.Map<List<ChiliUserAdminViewDto>>(users),
-                Pagination = new Pagination(page, users.Count, _context.Users.Count())
+                Pagination = new Pagination(page, _context.Users.Count(), users.Count)
             };
         }
         public async Task<ChiliUserDto> GetChiliUserByIdAsync(Guid id)
