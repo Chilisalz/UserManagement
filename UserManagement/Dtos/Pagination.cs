@@ -10,10 +10,10 @@
         {
             Page = page;
             ItemsPerPage = itemsPerPage;
-            ItemsTotal = itemsTotal;            
+            ItemsTotal = itemsTotal;
             PagesTotal = ItemsTotal / itemsPerPage;
             if (PagesTotal % ItemsTotal != 0)
-                PagesTotal ++;
+                PagesTotal++;
         }
     }
 }

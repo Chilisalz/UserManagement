@@ -37,7 +37,7 @@ namespace UserManagementService.Services
             ChiliUser existingUser = await _context.Users.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
-            {                
+            {
                 throw new EmailAlreadyTakenException($"Email {request.Email} is already used");
             }
 
