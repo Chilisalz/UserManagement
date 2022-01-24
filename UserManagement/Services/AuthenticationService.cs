@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,12 +26,14 @@ namespace UserManagementService.Services
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManagementContext _context;
         private readonly IMapper _mapper;
-        public AuthenticationService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context, IMapper mapper)
+        private readonly ILogger _logger;
+        public AuthenticationService(JWTSettings jwtSettings, TokenValidationParameters tokenValidationParameters, UserManagementContext context, IMapper mapper, ILogger<AuthenticationService> logger)
         {
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<ChiliUserDto> RegisterAsync(UserRegistrationDto request)
         {
@@ -92,18 +95,26 @@ namespace UserManagementService.Services
             ClaimsPrincipal validatedToken = GetPrincipalFromToken(token);
             if (validatedToken == null)
                 throw new InvalidTokenException("Invalid token");
-            long expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            DateTime expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddSeconds(expiryDateUnix);
 
-            //if (expiryDateUtc > DateTime.UtcNow)
-            //throw new TokenHasntExpiredException("This token hasn't expired yet");
+            long expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            DateTime expiryDateUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
+            
+            if (expiryDateUtc > DateTime.Now)
+                return new AuthenticationDto()
+                {
+                    Token = token,
+                    RefreshToken = refreshToken
+                };
 
             string jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+            _logger.LogInformation($"The following jti has been extracted from the accesstoken {jti}");
+            _logger.LogInformation($"RefreshToken: {refreshToken}");
+
             RefreshToken storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token.ToString() == refreshToken);
 
             if (storedRefreshToken == null)
                 throw new RefreshTokenNotFoundException("This refresh token does not exist");
+            _logger.LogInformation($"The following jti has been inside the stored Refreshtoken {storedRefreshToken.JwtId}");
 
             if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
                 throw new RefreshTokenHasExpiredException("This refresh token has expired");
@@ -115,7 +126,7 @@ namespace UserManagementService.Services
                 throw new RefreshTokenAlreadyUsedException("This refresh token has already been used");
 
             if (storedRefreshToken.JwtId != jti)
-                throw new InvalidJwtException("This refresh token does not match this JWT");
+                throw new InvalidJwtException("This refresh token does not match this JWT.");
 
             storedRefreshToken.Used = true;
             _context.RefreshTokens.Update(storedRefreshToken);
@@ -165,8 +176,8 @@ namespace UserManagementService.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            _logger.LogInformation($"New Token with following jti has been created {token.Id}");
             var refreshToken = new RefreshToken()
             {
                 JwtId = token.Id,

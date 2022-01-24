@@ -44,6 +44,26 @@ namespace UserManagementService.Controllers
                 Data = users.Users
             });
         }
+        [HttpGet("Secretquestion")]
+        public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
+        {
+            _logger.LogInformation($"Entering api/ChiliUser/Secretquestion");
+            return Ok(new ChiliResponse<List<SecurityQuestion>>()
+            {
+                Status = ResponseStatus.success,
+                Data = await _chiliUserService.GetAllSecurityQuestionsAsync()
+            });
+        }
+        [HttpGet("SecretQuestion/{email}")]
+        public async Task<IActionResult> GetRecoveryInformation(string email)
+        {
+            return Ok( new ChiliResponse<ChiliRecoveryDto>()
+            {
+                Status = ResponseStatus.success,
+                Data = await _chiliUserService.GetRecoveryInformation(email)
+            });
+
+        }
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] ChiliUserDto request)
         {
@@ -73,16 +93,7 @@ namespace UserManagementService.Controllers
                 Status = ResponseStatus.success
             });
         }
-        [HttpGet("Secretquestion")]
-        public async Task<IActionResult> GetAllSecrurityQuestionsAsync()
-        {
-            _logger.LogInformation($"Entering api/ChiliUser/Secretquestion");
-            return Ok(new ChiliResponse<List<SecurityQuestion>>()
-            {
-                Status = ResponseStatus.success,
-                Data = await _chiliUserService.GetAllSecurityQuestionsAsync()
-            });
-        }
+        
         [HttpPost("ValidateSecretAnswer")]
         public async Task<IActionResult> ValidateSecretAnswerAsync([FromBody] ValidateSecretAnswerDto request)
         {

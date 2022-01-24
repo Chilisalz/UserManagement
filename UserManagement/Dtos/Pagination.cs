@@ -12,7 +12,7 @@
             ItemsPerPage = itemsPerPage;
             ItemsTotal = itemsTotal;
             PagesTotal = ItemsTotal / itemsPerPage;
-            if (PagesTotal % ItemsTotal != 0)
+            if (ItemsTotal % itemsPerPage != 0)
                 PagesTotal++;
         }
     }

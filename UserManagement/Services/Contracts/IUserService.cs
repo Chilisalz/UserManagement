@@ -18,5 +18,6 @@ namespace UserManagementService.Services.Contracts
         Task ValidateSecretAnswerAsync(ValidateSecretAnswerDto request);
         Task<SecurityQuestion> GetSecurityQuestionOfUserAsync(string email);
         List<ChiliUserNameDto> MapChiliUser(List<Guid> request);
+        Task<ChiliRecoveryDto> GetRecoveryInformation(string email);
     }
 }

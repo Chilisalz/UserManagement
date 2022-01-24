@@ -40,11 +40,11 @@ namespace UserManagementService.Services
         }
         public async Task<GetUsersResultDto> GetAllUsersAsync(int page)
         {
-            List<ChiliUser> users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).ToListAsync();
+            List<ChiliUser> users = await _context.Users.Include(u => u.SecretQuestion).Include(u => u.Role).Skip((page - 1) * 10).Take(10).OrderBy(x => x.UserName).ToListAsync();
             return new GetUsersResultDto()
             {
                 Users = _mapper.Map<List<ChiliUserAdminViewDto>>(users),
-                Pagination = new Pagination(page, _context.Users.Count(), users.Count)
+                Pagination = new Pagination(page, _context.Users.Count())
             };
         }
         public async Task<ChiliUserDto> GetChiliUserByIdAsync(Guid id)
@@ -110,12 +110,24 @@ namespace UserManagementService.Services
             PasswordHasher<ChiliUser> passwordHasher = new();
             if (passwordHasher.VerifyHashedPassword(user, user.SecretAnswer, request.SecretAnswer) == PasswordVerificationResult.Failed)
                 throw new WrongSecretAnswerException($"Wrong secret answer");
+
+            user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
+            await _context.SaveChangesAsync();
         }
 
         public List<ChiliUserNameDto> MapChiliUser(List<Guid> request)
         {
             var users = _context.Users.Where(u => request.Contains(u.Id));
+            var notFound = _context.Users.Where(u => !request.Contains(u.Id));
             return _mapper.Map<List<ChiliUserNameDto>>(users);
+        }
+
+        public async Task<ChiliRecoveryDto> GetRecoveryInformation(string email)
+        {
+            var chiliUser = await _context.Users.FindByEmailAsync(email);
+            if (chiliUser == null)
+                throw new UserNotFoundException($"No user found with email {email}.");
+            return _mapper.Map<ChiliRecoveryDto>(chiliUser);
         }
     }
 }
